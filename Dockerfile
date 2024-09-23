@@ -1,8 +1,8 @@
-#Base image
+#Base image 
 FROM ubuntu:23.04
 
 #Set environment variables
-ENV DEBIAN_FRONTEND=noninteractive ###see what this does
+ENV DEBIAN_FRONTEND=noninteractive 
 
 #Define paths and directories 
 
