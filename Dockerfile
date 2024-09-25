@@ -17,20 +17,23 @@ ENV PATH="$SCRIPTS_DIR:$BIN_DIR:$PATH"
 
 #Update and install necessary packages
 RUN apt-get -y update && \
-    apt-get install -y wget tar nano curl git bzip2 
+    apt-get install -y wget tar nano curl git bzip2 && \
+    git --version 
+
+
 
 #Install Miniconda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh && \
-    bash /tmp/miniconda.sh -b -p /opt/conda && \
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh 
+RUN bash /tmp/miniconda.sh -b -p /opt/conda && \
     rm /tmp/miniconda.sh && \
-    /opt/conda/bin/conda clean -tipsy
-
+    echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh
 #Add conda to PATH variable
 ENV PATH="/opt/conda/bin:$PATH"
 
-#Install snakemake and snakemake wrapper utilities
-RUN conda install -c bioconda snakemake && \
-    pip install snakemake-wrapper-utils
+#Create snakemake environment and install snakemake and snakemake wrapper utilities
+RUN conda create -n snakemake_env python=3.8 -y && \
+    /opt/conda/bin/conda install -n snakemake_env -c conda-forge -c bioconda -c defaults snakemake && \
+    /opt/conda/bin/pip install snakemake-wrapper-utils
 
 #Copy snakemake pipeline, yml files, and scripts into container
 COPY variant_calling_pipeline.snake $HOME_DIR/variant_calling_pipeline.snake
@@ -41,5 +44,5 @@ COPY envs/ $HOME_DIR/envs
 WORKDIR $HOME_DIR
 
 #Define entry point for the container
-ENTRYPOINT ["snakemake", "--snakefile", "variant_calling_pipeline.snake", "--use-conda"]
+ENTRYPOINT ["/opt/conda/envs/snakemake_env/bin/snakemake", "--snakefile", "variant_calling_pipeline.snake", "--use-conda"]
 
