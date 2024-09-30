@@ -38,7 +38,7 @@ RUN conda create -n snakemake_env python=3.8 -y && \
 #Copy snakemake pipeline, yml files, and scripts into container
 COPY variant_calling_pipeline.snake $HOME_DIR/variant_calling_pipeline.snake
 COPY scripts/ $SCRIPTS_DIR
-COPY envs/ $HOME_DIR/envs
+COPY config/ $HOME_DIR/config
 
 #Set working directory
 WORKDIR $HOME_DIR
