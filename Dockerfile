@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV HOME_DIR=/mtDNA_variant_call_pipeline/
 ENV SCRIPTS_DIR=/mtDNA_variant_call_pipeline/scripts/
 ENV BIN_DIR=/mtDNA_variant_call_pipeline/bin/
-ENV INPUT_DIR=/mtDNA_variant_call_pipeline/input_bams
+ENV INPUT_DIR=/mtDNA_variant_call_pipeline/input_bams/
 ENV rCRS_OUTPUT_DIR=/mtDNA_variant_call_pipeline/vcf_files_rCRS/
 ENV CONSENSUS_OUTPUT_DIR=/mtDNA_variant_call_pipeline/vcf_files_consensus/
 
