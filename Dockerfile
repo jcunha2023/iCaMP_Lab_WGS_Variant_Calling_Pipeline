@@ -20,8 +20,6 @@ RUN apt-get -y update && \
     apt-get install -y wget tar nano curl git bzip2 && \
     git --version 
 
-
-
 #Install Miniconda
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh 
 RUN bash /tmp/miniconda.sh -b -p /opt/conda && \
@@ -38,7 +36,7 @@ RUN conda create -n snakemake_env python=3.8 -y && \
 #Copy snakemake pipeline, yml files, and scripts into container
 COPY variant_calling_pipeline.snake $HOME_DIR/variant_calling_pipeline.snake
 COPY scripts/ $SCRIPTS_DIR
-COPY envs/ $HOME_DIR/envs
+COPY config/ $HOME_DIR/config
 
 #Set working directory
 WORKDIR $HOME_DIR
