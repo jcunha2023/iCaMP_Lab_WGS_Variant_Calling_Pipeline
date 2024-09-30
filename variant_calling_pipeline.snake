@@ -8,7 +8,7 @@
 import pandas as pd 
 
 #Load configuration file
-configfile: "/mtDNA_variant_call_pipeline/config/config.yml"
+configfile: "/mtDNA_variant_call_pipeline/config/config.yaml"
 working_dir = config["working_dir"]
 results_dir = config["results_dir"]
 

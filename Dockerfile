@@ -32,7 +32,7 @@ ENV PATH="/opt/conda/bin:$PATH"
 
 #Create snakemake environment and install snakemake and snakemake wrapper utilities
 RUN conda create -n snakemake_env python=3.8 -y && \
-    /opt/conda/bin/conda install -n snakemake_env -c conda-forge -c bioconda -c defaults snakemake && \
+    /opt/conda/bin/conda install -n snakemake_env -c conda-forge -c bioconda -c defaults snakemake pandas && \
     /opt/conda/bin/pip install snakemake-wrapper-utils
 
 #Copy snakemake pipeline, yml files, and scripts into container
