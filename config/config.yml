@@ -1,9 +1,9 @@
 #Directories 
-results_dir: #absolute path to the results directory
-working_dir: #absolute path for working directory
+results_dir: mtDNA_variant_calling_pipeline/output/ #absolute path to the results directory
+working_dir: mtDNA_variant_calling_pipeline/tmp/ #absolute path for working directory
 
 #List of samples (in tsv format)
-units:  #Provide local path to where the "units" file is stored containing sample IDs and input ids
+units:  Y:/Jason Cunha/mitochondrial_variants_ECG_AFib_project/varcall_pipeline_docker_testing_files/samples.txt #Provide local path to where the "units" file is stored containing sample IDs and input ids
 
 #Mitochondrial reference sequence
 chrM_refseq: mtDNA_variant_calling_pipeline/chrM_reference/chrMref.fa
