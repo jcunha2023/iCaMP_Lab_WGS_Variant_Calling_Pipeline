@@ -225,7 +225,6 @@ rule split_multiallele_2:
         '''     
 
 
-
 # rule bgzip_1:
 #     input:
 #         vcf = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
