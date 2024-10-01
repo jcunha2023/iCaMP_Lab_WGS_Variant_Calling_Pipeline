@@ -45,4 +45,4 @@ WORKDIR $HOME_DIR
 
 #Define entry point for the container
 ENTRYPOINT ["/opt/conda/envs/snakemake_env/bin/snakemake", "--snakefile", "variant_calling_pipeline.snake", "--use-conda"]
-
+CMD ["--snakefile", "variant_calling_pipeline.snake", "--use-conda"]

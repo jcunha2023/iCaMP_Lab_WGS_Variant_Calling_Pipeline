@@ -8,10 +8,20 @@
 import pandas as pd 
 
 #Load configuration file
-configfile: "/mtDNA_variant_call_pipeline/config/config.yaml"
-working_dir = config["working_dir"]
-results_dir = config["results_dir"]
+configfile: "/mtDNA_variant_call_pipeline/config/config.yml"
+# working_dir = config["working_dir"]
+# results_dir = config["results_dir"]
 
+input_dir = config["input_dir"]
+output_dir = config["results_dir"]
+
+# file_path = "/c/Users/Jason/Documents/varcall_pipeline_docker_testing_files/config/samples.txt"
+
+# try:
+#     df = pd.read_table(file_path, delimiter='')
+#     print(df)
+# except FileNotFoundError as e:
+#     print(f"Error: {e}")
 
 #Parse input samples file, extract sample ids
 units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
@@ -19,18 +29,19 @@ units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=Fal
 #Create sample ID list 
 INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
+
 rule all:
     input:
         #expand("../vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf", SAMPLE_ID = INPUT_ID)
-        expand("{results_dir}/{SAMPLE_ID}.fq", results_dir = results_dir, SAMPLE_ID = INPUT_ID)
+        expand("{results_dir}/fq_files/{SAMPLE_ID}.fq", results_dir = output_dir, SAMPLE_ID = INPUT_ID)
 
 # convert bam files (ideally NUMT filtered chrM reads (previously aligned to chrM with bwa))
 # to fq files
 rule bam_2_fq:
     input:
-        bam = "../input_bams/{SAMPLE_ID}_chrM_reads_sorted.bam"
+        bam = "${input_dir}/{SAMPLE_ID}_chrM_reads_sorted.bam"
     output:
-        fq = "../fq_files/{SAMPLE_ID}.fq"
+        fq = "{results_dir}/fq_files/{SAMPLE_ID}.fq"
     threads: 1
     conda: "../envs/samtools_ENV.yml"
     shell:
