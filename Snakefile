@@ -20,39 +20,41 @@ units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=Fal
 #Create sample ID list 
 INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
+print("input id variable:", INPUT_ID)
 
 rule all:
     input:
         #expand("../vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf", SAMPLE_ID = INPUT_ID)
-        expand(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq", SAMPLE_ID = INPUT_ID)
+        expand(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq", SAMPLE_ID = INPUT_ID),
+        expand(OUTPUT_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam", SAMPLE_ID = INPUT_ID)
 
 # convert bam files (ideally NUMT filtered chrM reads (previously aligned to chrM with bwa))
 # to fq files
 rule bam_2_fq:
     input:
-        bam = WORKING_DIR + "/input_bams/{SAMPLE_ID}_chrM_reads_sorted.bam"
+        bam = WORKING_DIR + "/input_bams/{SAMPLE_ID}.bam"
     output:
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     threads: 1
     conda: CONFIG_DIR + "/samtools_ENV.yml"
     shell:
         '''
-        samtools bam2fq {input.bam} > {output.fq} 
+        samtools bam2fq {input.bam} > {output.fq}
         '''    
-# # align fq files to rCRS using bwa mem
-# rule bwa:
-#     input:
-#         fq =  "../fq_files/{SAMPLE_ID}.fq"
-#     output:
-#         sam = "../sam_files_rCRS/{SAMPLE_ID}.sam"
-#     params:
-#         reference = "../chrM_reference/chrMref.fa"
-#     threads: 1
-#     conda: "../envs/bwa_ENV.yml"
-#     shell:
-#         '''
-#         bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
-#         '''
+# align fq files to rCRS using bwa mem
+rule bwa:
+    input:
+        fq =  OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
+    output:
+        sam = OUTPUT_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
+    params:
+        reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
+    threads: 1
+    conda: CONFIG_DIR + "/envs/bwa_ENV.yml"
+    shell:
+        '''
+        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
+        '''
 # # run variant calling script which used gatk mutect2 in mitochondrial mode
 # rule variant_calling_1:
 #     input:
