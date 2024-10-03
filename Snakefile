@@ -2,7 +2,7 @@
 ########## This is a pipeline to call variants from WGS data developed by Ariel Xu #################
 ####################################################################################################
 
-INPUT_ID=["bb"]
+#INPUT_ID=["bb"]
 
 #Libraries
 import pandas as pd 
@@ -15,10 +15,10 @@ OUTPUT_DIR = config["results_dir"]
 CONFIG_DIR = config["config_dir"]
 
 #Parse input samples file, extract sample ids
-#units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
+units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
 
 #Create sample ID list 
-#INPUT_ID = units.index.get_level_values('sample').unique().tolist()
+INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
 rule all:
     input:
