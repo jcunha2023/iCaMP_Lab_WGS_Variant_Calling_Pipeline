@@ -58,5 +58,6 @@ WORKDIR $HOME_DIR
 #ENTRYPOINT ["echo", "Container started successfully"]
 
 ENTRYPOINT ["conda", "run", "-n", "snakemake_env", "snakemake"]
-CMD ["--snakefile", "Snakefile", "--use-conda", "--verbose"]
+CMD ["--forceall", "--rulegraph", "|", "dot", "-Tpdf", ">", "dag.pdf"]
+#CMD ["--snakefile", "Snakefile", "--use-conda", "--verbose"]
 
