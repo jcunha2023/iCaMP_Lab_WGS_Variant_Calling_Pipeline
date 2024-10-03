@@ -34,7 +34,7 @@ rule bam_2_fq:
     output:
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     #threads: 1
-    conda: CONFIG_DIR + "/samtools_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
         samtools bam2fq {input.bam} > {output.fq}
@@ -48,7 +48,7 @@ rule bwa:
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
     #threads: 1
-    conda: CONFIG_DIR + "/envs/bwa_ENV.yml"
+    conda: f"{CONFIG_DIR}/bwa_ENV.yml"
     shell:
         '''
         bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
@@ -62,7 +62,7 @@ rule variant_calling_1:
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
     #threads: 16
-    conda: CONFIG_DIR + "/samtools_gatk_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
         ./variant_calling_1.sh {input.sam} {params.reference}
@@ -87,7 +87,7 @@ rule tabix_1:
         vcf_gz_tbi = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"
     params:
     #threads: 1
-    conda: "../envs/samtools_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''         
         tabix -p vcf {input.vcf_gz}
@@ -103,7 +103,7 @@ rule split_multiallele_1:
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
     #threads: 1
-    conda: CONFIG_DIR + "/samtools_gatk_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
         gatk LeftAlignAndTrimVariants \
@@ -148,7 +148,7 @@ rule tabix_2:
         vcf_filtered_vaf_50_gz_tbi = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz.tbi"
     params:
     #threads: 1
-    conda: "../envs/samtools_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''         
         tabix -p vcf {input.vcf_filtered_vaf_50_gz}
@@ -164,7 +164,7 @@ rule make_consensus_reference:
     params: 
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
     #threads: 1
-    conda: CONFIG_DIR + "/htslib_bcftools_ENV.yml"
+    conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
     shell:
         '''
         bcftools consensus -f {params.reference} {input.vcf_filtered_vaf_50_gz} > {output.consensus_ref}
@@ -175,7 +175,7 @@ rule variant_calling_2:
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     output:
         vcf = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    conda: CONFIG_DIR + "/envs/variant_calling_2_ENV.yml"
+    conda: f"{CONFIG_DIR}/variant_calling_2_ENV.yml"
     shell:
         '''
         ./variant_calling_2.sh {input.consensus_ref} {input.fq} 
@@ -187,7 +187,7 @@ rule bgzip_3:
     output:
         vcf_gz = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
     #threads: 1
-    conda: CONFIG_DIR + "/htslib_ENV.yml"
+    conda: f"{CONFIG_DIR}/htslib_ENV.yml"
     shell:
         '''
         bgzip -i {input.vcf}
@@ -200,7 +200,7 @@ rule tabix_3:
         vcf_gz_tbi = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
     params:
     #threads: 1
-    conda: CONFIG_DIR + "/envs/samtools_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''         
         tabix -p vcf {input.vcf_gz}
@@ -215,7 +215,7 @@ rule split_multiallele_2:
     params:
         reference = OUTPUT_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
     #threads: 1
-    conda: CONFIG_DIR + "/samtools_gatk_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
         gatk LeftAlignAndTrimVariants \
