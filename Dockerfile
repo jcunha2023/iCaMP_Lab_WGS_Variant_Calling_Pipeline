@@ -53,6 +53,6 @@ WORKDIR $HOME_DIR
 #Define entry point for the container
 
 ENTRYPOINT ["conda", "run", "-n", "snakemake_base", "snakemake"]
-CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--verbose"]
+#CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--verbose"]
 
-#CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--dryrun", "-p"]
+CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--dryrun", "-p"]
