@@ -55,4 +55,4 @@ WORKDIR $HOME_DIR
 ENTRYPOINT ["conda", "run", "-n", "snakemake_base", "snakemake"]
 #CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--verbose"]
 
-CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--dryrun", "-p"]
+CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--dryrun", "-p", ">", "/dev/stdout", "2>", "/dev/stderr"]
