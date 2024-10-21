@@ -20,6 +20,14 @@ units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=Fal
 #Create sample ID list 
 INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
+#Check if SAMPLE_ID is provided via config. If so, use it
+if "SAMPLE_ID" in config:
+    if config["SAMPLE_ID"] in INPUT_ID:
+        INPUT_ID = [config["SAMPLE_ID"]]  # Use the specific sample ID passed from dsub
+    else:
+        raise ValueError(f"Sample ID '{config['SAMPLE_ID']}' not found in units file.")
+
+
 rule all:
     input:
         expand(OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf", SAMPLE_ID = INPUT_ID)
