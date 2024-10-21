@@ -21,16 +21,6 @@ RUN apt-get -y update && \
     apt-get install -y wget tar nano curl git bzip2 && \
     git --version 
 
-
-
-# #Install Miniconda
-# RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh 
-# RUN bash /tmp/miniconda.sh -b -p /opt/conda && \
-#     rm /tmp/miniconda.sh && \
-#     echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh
-# #Add conda to PATH variable
-# ENV PATH="/opt/conda/bin:$PATH"
-
 #Copy config directory and environment yml files into image
 COPY config/ $CONFIG_DIR
 
@@ -50,9 +40,7 @@ COPY scripts/ $SCRIPTS_DIR
 #Set working directory
 WORKDIR $HOME_DIR
 
-#Define entry point for the container
+#Define entry point for the container and command to activate the base environment
 
-ENTRYPOINT ["conda", "run", "-n", "snakemake_base", "snakemake"]
-#CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--verbose"]
-
-CMD ["--snakefile", "Snakefile", "--sdm", "conda", "--dryrun", "-p", ">", "/dev/stdout", "2>", "/dev/stderr"]
+ENTRYPOINT ["/bin/bash", "-c" ]
+CMD [ "source activate snakemake_base" ]
