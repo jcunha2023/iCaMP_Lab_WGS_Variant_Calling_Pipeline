@@ -38,7 +38,7 @@ rule all:
 # to fq files
 rule bam_2_fq:
     input:
-        bam = WORKING_DIR + "/input_bams/{SAMPLE_ID}.bam"
+        bam = WORKING_DIR + "/input/{SAMPLE_ID}.bam"
     output:
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     #threads: 1

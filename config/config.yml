@@ -2,6 +2,7 @@
 working_dir: /mtDNA_variant_call_pipeline #absolute path for working directory
 config_dir: /mtDNA_variant_call_pipeline/config #absolute path for config directory
 results_dir: /mtDNA_variant_call_pipeline/output #absolute path to the results directory
+input_dir: /mtDNA_variant_call_pipeline/input #absolute path for input directory
 SAMPLE_ID: "" #Input Sample ID for pipeline
 
 #List of samples (in tsv format)
