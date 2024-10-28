@@ -25,14 +25,13 @@ RUN apt-get -y update && \
 COPY config/ $CONFIG_DIR
 
 # Create base snakemake environment
-RUN mamba env create -f $CONFIG_DIR/snakemake_base_ENV.yml && \
+RUN conda env remove -n snakemake_env || true && \
+    mamba env create -f $CONFIG_DIR/snakemake_base_ENV.yml && \
     mamba clean --all -y
+
 
 RUN echo "conda run -n snakemake_env" >> ~/.bashrc
 ENV PATH /opt/conda/envs/snakemake_env/bin:$PATH
-
-
-
 
 
 #old script below. uncomment to revert.
