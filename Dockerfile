@@ -24,6 +24,9 @@ RUN apt-get -y update && \
 #Copy config directory and environment yml files into image
 COPY config/ $CONFIG_DIR
 
+#Copy snakemake pipeline into image
+COPY Snakefile $HOME_DIR/Snakefile
+
 # Create base snakemake environment
 RUN conda env remove -n snakemake_env || true && \
     mamba env create -f $CONFIG_DIR/snakemake_base_ENV.yml && \
