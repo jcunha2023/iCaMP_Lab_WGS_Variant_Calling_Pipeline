@@ -1,5 +1,5 @@
 ####################################################################################################
-########## This is a pipeline to call variants from WGS data developed by Ariel Xu #################
+##########This is a pipeline to call variants from WGS data developed by Ariel Xu#################
 ####################################################################################################
 
 #INPUT_ID=["bb"]
@@ -14,18 +14,13 @@ WORKING_DIR = config["working_dir"]
 OUTPUT_DIR = config["results_dir"]
 CONFIG_DIR = config["config_dir"]
 
-#Parse input samples file, extract sample ids
-units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
-
-#Create sample ID list 
-INPUT_ID = units.index.get_level_values('sample').unique().tolist()
-
-#Check if SAMPLE_ID is provided via config. If so, use it
-if "SAMPLE_ID" in config:
-    if config["SAMPLE_ID"] in INPUT_ID:
-        INPUT_ID = [config["SAMPLE_ID"]]  # Use the specific sample ID passed from dsub
-    else:
-        raise ValueError(f"Sample ID '{config['SAMPLE_ID']}' not found in units file.")
+#Initialize INPUT_ID based on config
+if config["SAMPLE_ID"]:  #Use single sample if SAMPLE_ID is provided and non-empty
+    INPUT_ID = [config["SAMPLE_ID"]]
+# else:
+#     #Parse `units` file to load all sample IDs if SAMPLE_ID is not specified
+#     units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
+#     INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
 
 rule all:

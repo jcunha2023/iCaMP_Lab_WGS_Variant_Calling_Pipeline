@@ -24,8 +24,12 @@ RUN apt-get -y update && \
 #Copy config directory and environment yml files into image
 COPY config/ $CONFIG_DIR
 
-#Copy snakemake pipeline into image
+#Copy directory with chrM reference into image
+COPY chrM_reference/ $HOME_DIR/chrM_reference
+
+#Copy snakemake pipeline and scripts directory into image
 COPY Snakefile $HOME_DIR/Snakefile
+COPY scripts/ $SCRIPTS_DIR
 
 # Create base snakemake environment
 RUN conda env remove -n snakemake_env || true && \
@@ -36,6 +40,8 @@ RUN conda env remove -n snakemake_env || true && \
 RUN echo "conda run -n snakemake_env" >> ~/.bashrc
 ENV PATH /opt/conda/envs/snakemake_env/bin:$PATH
 
+#Set working directory
+WORKDIR $HOME_DIR
 
 #old script below. uncomment to revert.
 
