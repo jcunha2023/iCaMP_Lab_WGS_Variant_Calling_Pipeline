@@ -13,6 +13,7 @@ configfile: "/mtDNA_variant_call_pipeline/config/config.yml"
 WORKING_DIR = config["working_dir"]
 OUTPUT_DIR = config["results_dir"]
 CONFIG_DIR = config["config_dir"]
+FILE_EXT = config["read_format"]
 
 #Initialize INPUT_ID based on config
 if config["SAMPLE_ID"]:  #Use single sample if SAMPLE_ID is provided and non-empty
@@ -33,14 +34,21 @@ rule all:
 # to fq files
 rule bam_2_fq:
     input:
-        bam = WORKING_DIR + "/input/{SAMPLE_ID}.bam"
+        read_file = lambda wildcards: f"{WORKING_DIR}/input/{wildcards.SAMPLE_ID}.{FILE_EXT}",
+        ref_seq = WORKING_DIR + "/chrM_reference"
     output:
+        temp_bam = temp(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.bam"),
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     #threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
-        samtools bam2fq {input.bam} > {output.fq}
+        if [[ "{FILE_EXT}" == "bam" ]]; then
+            samtools bam2fq {input.read_file} > {output.fq}
+        elif [[ "{FILE_EXT}" == "cram" ]]; then
+            samtools view -b -T {input.ref_seq} -o {output.temp_bam} {input.read_file} && \
+            samtools bam2fq {output.temp_bam} > {output.fq}
+        fi
         '''    
 # align fq files to rCRS using bwa mem
 rule bwa:

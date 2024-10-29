@@ -13,5 +13,6 @@ units: /mtDNA_variant_call_pipeline/config/samples.txt #Provide local path to wh
 #Mitochondrial reference sequence
 chrM_refseq: /mtDNA_variant_call_pipeline/chrM_reference/chrMref.fa
 
-
+#Select whether the input read files are in .bam or .cram format
+read_format: "cram"  #include either "cram" or "bam" in quotes
 
