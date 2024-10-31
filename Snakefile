@@ -13,6 +13,7 @@ configfile: "/mtDNA_variant_call_pipeline/config/config.yml"
 WORKING_DIR = config["working_dir"]
 OUTPUT_DIR = config["results_dir"]
 CONFIG_DIR = config["config_dir"]
+INPUT_FILE_DIR = config["input_dir"]
 FILE_EXT = config["read_format"]
 
 #Initialize INPUT_ID based on config
@@ -34,7 +35,7 @@ rule all:
 # to fq files
 rule bam_2_fq:
     input:
-        read_file = lambda wildcards: f"{WORKING_DIR}/input/{wildcards.SAMPLE_ID}.{FILE_EXT}",
+        read_file = lambda wildcards: f"{INPUT_FILE_DIR}/{wildcards.SAMPLE_ID}.{FILE_EXT}",
         ref_seq = WORKING_DIR + "/chrM_reference"
     output:
         temp_bam = temp(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.bam"),
