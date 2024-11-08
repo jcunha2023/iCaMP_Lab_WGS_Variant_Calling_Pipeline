@@ -35,7 +35,52 @@ rule bam_2_fq:
     shell:
         '''
         samtools bam2fq {input.bam} > {output.fq} 
-        '''    
+        '''   
+# Add a 300bp sequence to the end of the rCRS to "circularize" it. Approach based on MitoHPC pipeline (doi:10.1093/nargab/lqac034)
+rule circ_rCRS: 
+    input:
+        lin_rCRS="../chrM_reference/chrMref.fa",
+        lin_rCRS_idx="../chrM_reference/chrMref.fa.fai"
+    output:
+        circ_rCRS="../chrM_reference/chrMref300.fa",
+    params:
+        seq_header=chrM, #header in the fasta file
+        ext_len=300, #length of sequence extension
+        fa_file_prefix="../chrM_reference/chrMref" #prefix of fasta file
+    conda:"../config/samtools_ENV.yml"
+    shell:
+        '''
+        samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" |  perl -ane 'BEGIN { print ">{params.seq_header}\n" }  chomp; print ; END {print "\n"}'  > {output.circ_rCRS}
+        '''
+#Generate samtools index file for circular rCRS sequence
+circ_rCRS_samtools_idx:
+    input:
+        circ_rCRS="../chrM_reference/chrMref300.fa"
+    output:
+        circ_rCRS_fai="../chrM_reference/chrMref300.fa.fai"
+    conda: "../config/samtools_ENV.yml"
+    shell:
+        '''
+        samtools faidx {input.circ_rCRS}
+        '''
+#Generate bwa index file for circular rCRS sequence
+circ_rCRS_bwa_idx:
+    input: 
+        circ_rCRS="../chrM_reference/chrMref300.fa"
+    output:
+        amb = "../chrM_reference/chrMref300.amb",
+        ann = "../chrM_reference/chrMref300.ann",
+        bwt = "../chrM_reference/chrMref300.bwt",
+        pac = "../chrM_reference/chrMref300.pac",
+        sa = "../chrM_reference/chrMref300.sa"
+    params:
+        ext_len=300, #length of sequence extension
+        fa_file_prefix="../chrM_reference/chrMref" #prefix of fasta file
+    conda: "../config/bwa_ENV.yml"
+    shell:
+        '''
+        bwa index {output.circ_rCRS} -p {params.fa_file_prefix}{params.ext_len} 
+        '''
 # align fq files to rCRS using bwa mem
 rule bwa:
     input:
@@ -43,7 +88,7 @@ rule bwa:
     output:
         sam = "../sam_files_rCRS/{SAMPLE_ID}.sam"
     params:
-        reference = "../chrM_reference/chrMref.fa"
+        reference ="../chrM_reference/chrMref300.fa"
     threads: 1
     conda: "../config/bwa_ENV.yml"
     shell:
@@ -51,7 +96,23 @@ rule bwa:
         bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
         '''
 # run variant calling script which used gatk mutect2 in mitochondrial mode
-rule variant_calling_1:
+# This step uses the linear version of the rCRS
+rule variant_calling_1a:
+    input:
+        sam = "../sam_files_rCRS/{SAMPLE_ID}.sam"
+    output:
+        vcf = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
+    params:
+        reference = "../chrM_reference/chrMref.fa"
+    threads: 16
+    conda: "../config/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        ./variant_calling_1.sh {input.sam} {params.reference}
+        '''
+# run variant calling script which used gatk mutect2 in mitochondrial mode
+# This step uses the circular version of the rCRS
+rule variant_calling_1b:
     input:
         sam = "../sam_files_rCRS/{SAMPLE_ID}.sam"
     output:
