@@ -31,7 +31,7 @@ rule all:
 # to fq files
 rule bam_2_fq:
     input:
-        bam = "{READ_DIR}/{SAMPLE_ID}.bam"
+        bam = lambda wildcards: f"{wildcards.READ_DIR}/{SAMPLE_ID}.bam"
     output:
         fq = "../fq_files/{SAMPLE_ID}.fq"
     threads: 1
