@@ -76,30 +76,29 @@ rule circ_rCRS_bwa_idx:
     input: 
         circ_rCRS="./chrM_reference/chrMref300.fa"
     output:
-        amb = "./chrM_reference/chrMref300.amb",
-        ann = "./chrM_reference/chrMref300.ann",
-        bwt = "./chrM_reference/chrMref300.bwt",
-        pac = "./chrM_reference/chrMref300.pac",
-        sa = "./chrM_reference/chrMref300.sa"
+        amb = "./chrM_reference/chrMref300.fa.amb",
+        ann = "./chrM_reference/chrMref300.fa.ann",
+        bwt = "./chrM_reference/chrMref300.fa.bwt",
+        pac = "./chrM_reference/chrMref300.fa.pac",
+        sa = "./chrM_reference/chrMref300.fa.sa"
     params:
         ext_len=300, #length of sequence extension
         fa_file_prefix="./chrM_reference/chrMref" #prefix of fasta file
     conda: "./config/bwa_ENV.yml"
     shell:
         '''
-        bwa index {input.circ_rCRS} -p {params.fa_file_prefix}{params.ext_len} 
+        bwa index {input.circ_rCRS} -p {params.fa_file_prefix}{params.ext_len}.fa 
         '''
 # align fq files to circularized rCRS using bwa mem
 rule bwa:
     priority:5
     input:
         fq =  "./fq_files/{SAMPLE_ID}.fq",
-        amb = "./chrM_reference/chrMref300.amb",
-        ann = "./chrM_reference/chrMref300.ann",
-        bwt = "./chrM_reference/chrMref300.bwt",
-        pac = "./chrM_reference/chrMref300.pac",
-        sa = "./chrM_reference/chrMref300.sa",
-        circ_rCRS_fai="./chrM_reference/chrMref300.fa.fai"
+        amb = "./chrM_reference/chrMref300.fa.amb",
+        ann = "./chrM_reference/chrMref300.fa.ann",
+        bwt = "./chrM_reference/chrMref300.fa.bwt",
+        pac = "./chrM_reference/chrMref300.fa.pac",
+        sa = "./chrM_reference/chrMref300.fa.sa"
     output:
         sam = "./sam_files_rCRS/{SAMPLE_ID}.sam"
     params:
