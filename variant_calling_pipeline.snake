@@ -45,7 +45,7 @@ rule circ_rCRS:
     output:
         circ_rCRS="../chrM_reference/chrMref300.fa",
     params:
-        seq_header=chrM, #header in the fasta file
+        seq_header="chrM", #header in the fasta file
         ext_len=300, #length of sequence extension
         fa_file_prefix="../chrM_reference/chrMref" #prefix of fasta file
     conda:"../config/samtools_ENV.yml"
