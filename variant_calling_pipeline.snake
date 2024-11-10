@@ -104,8 +104,8 @@ rule variant_calling_1a:
     output:
         vcf = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf"
     params:
-        reference = "../chrM_reference/chrMref.fa",
-        interval = "chrM" 
+        interval = "chrM", 
+        reference = "../chrM_reference/chrMref.fa"
     threads: 16
     conda: "../config/samtools_gatk_ENV.yml"
     shell:
@@ -120,8 +120,8 @@ rule variant_calling_1b:
     output:
         vcf = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
     params:
-        reference = "../chrM_reference/chrMref300.fa",
-        interval = "chrM:285-315"
+        interval = "chrM:285-315",
+        reference = "../chrM_reference/chrMref300.fa"
     threads: 16
     conda: "../config/samtools_gatk_ENV.yml"
     shell:
