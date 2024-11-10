@@ -23,7 +23,7 @@ rule all:
     input:
         #expand("../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz", SAMPLE_ID = INPUT_ID)
         expand("../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz", SAMPLE_ID = INPUT_ID)
-        
+
 # convert bam files (ideally NUMT filtered chrM reads (previously aligned to chrM with bwa))
 # to fq files
 rule bam_2_fq:
@@ -105,7 +105,7 @@ rule variant_calling_1a:
         vcf = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf"
     params:
         reference = "../chrM_reference/chrMref.fa",
-        interval = "chrM" #the interval of the genome over which Mutect2 will operate
+        interval = "chrM" 
     threads: 16
     conda: "../config/samtools_gatk_ENV.yml"
     shell:
