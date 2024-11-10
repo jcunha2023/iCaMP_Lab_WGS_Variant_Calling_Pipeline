@@ -30,6 +30,7 @@ rule all:
 # convert bam files (ideally NUMT filtered chrM reads (previously aligned to chrM with bwa))
 # to fq files
 rule bam_2_fq:
+    priority:1
     input:
         bam = lambda wildcards: f"{sample_to_path[wildcards.SAMPLE_ID]}/{wildcards.SAMPLE_ID}.bam"
     output:
@@ -42,6 +43,7 @@ rule bam_2_fq:
         '''   
 # Add a 300bp sequence to the end of the rCRS to "circularize" it. Approach based on MitoHPC pipeline (doi:10.1093/nargab/lqac034)
 rule circ_rCRS: 
+    priority:2
     input:
         lin_rCRS="./chrM_reference/chrMref.fa",
         lin_rCRS_idx="./chrM_reference/chrMref.fa.fai"
@@ -58,6 +60,7 @@ rule circ_rCRS:
         '''
 #Generate samtools index file for circular rCRS sequence
 rule circ_rCRS_samtools_idx:
+    priority:3
     input:
         circ_rCRS="./chrM_reference/chrMref300.fa"
     output:
@@ -69,6 +72,7 @@ rule circ_rCRS_samtools_idx:
         '''
 #Generate bwa index file for circular rCRS sequence
 rule circ_rCRS_bwa_idx:
+    priority:4
     input: 
         circ_rCRS="./chrM_reference/chrMref300.fa"
     output:
@@ -87,6 +91,7 @@ rule circ_rCRS_bwa_idx:
         '''
 # align fq files to circularized rCRS using bwa mem
 rule bwa:
+    priority:5
     input:
         fq =  "./fq_files/{SAMPLE_ID}.fq",
         amb = "./chrM_reference/chrMref300.amb",
