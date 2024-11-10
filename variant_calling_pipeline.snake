@@ -16,11 +16,11 @@ results_dir = config["results_dir"]
 #Parse input samples file, extract sample ids
 units = pd.read_table(config["units"], dtype=str).set_index(["path","sample"], drop=False)
 
-#Create sample ID list 
-INPUT_ID = units.index.get_level_values('sample').unique().tolist()
+#Create mappings of input read file directories to the sample ID
+sample_to_path = units.set_index("sample")["path"].to_dict()
 
-#Create list of input read file directories 
-READ_DIR = units.index.get_level_values('path').unique().tolist()
+# Get list of sample IDs
+INPUT_ID = list(sample_to_path.keys())
 
 rule all:
     input:
@@ -31,7 +31,7 @@ rule all:
 # to fq files
 rule bam_2_fq:
     input:
-        bam = lambda wildcards: f"{wildcards.READ_DIR}/{SAMPLE_ID}.bam"
+        bam = lambda wildcards: f"{sample_to_path[wildcards.SAMPLE_ID]}/{wildcards.SAMPLE_ID}.bam"
     output:
         fq = "../fq_files/{SAMPLE_ID}.fq"
     threads: 1
