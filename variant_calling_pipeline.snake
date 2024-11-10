@@ -148,7 +148,7 @@ rule tabix_1:
         lin_vcf_gz = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
         circ_vcf_gz= "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz"  
     output:
-        lin_vcf_gz_tbi = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"
+        lin_vcf_gz_tbi = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
         circ_vcf_gz_tbi = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
     params:
     threads: 1
@@ -164,7 +164,7 @@ rule split_multiallele_1:
         input:
         lin_vcf_gz = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
         circ_vcf_gz= "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz",
-        lin_vcf_gz_tbi = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"
+        lin_vcf_gz_tbi = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
         circ_vcf_gz_tbi = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
     output:
         lin_vcf_splitted = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
