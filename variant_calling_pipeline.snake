@@ -8,7 +8,7 @@
 import pandas as pd 
 
 #Load configuration file
-configfile: "../config/config.yml"
+configfile: "./config/config.yml"
 working_dir = config["working_dir"]
 results_dir = config["results_dir"]
 
