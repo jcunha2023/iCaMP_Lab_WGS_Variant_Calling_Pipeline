@@ -93,7 +93,8 @@ rule bwa:
         ann = "./chrM_reference/chrMref300.ann",
         bwt = "./chrM_reference/chrMref300.bwt",
         pac = "./chrM_reference/chrMref300.pac",
-        sa = "./chrM_reference/chrMref300.sa"
+        sa = "./chrM_reference/chrMref300.sa",
+        circ_rCRS_fai="./chrM_reference/chrMref300.fa.fai"
     output:
         sam = "./sam_files_rCRS/{SAMPLE_ID}.sam"
     params:
