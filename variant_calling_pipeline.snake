@@ -88,7 +88,12 @@ rule circ_rCRS_bwa_idx:
 # align fq files to circularized rCRS using bwa mem
 rule bwa:
     input:
-        fq =  "./fq_files/{SAMPLE_ID}.fq"
+        fq =  "./fq_files/{SAMPLE_ID}.fq",
+        amb = "./chrM_reference/chrMref300.amb",
+        ann = "./chrM_reference/chrMref300.ann",
+        bwt = "./chrM_reference/chrMref300.bwt",
+        pac = "./chrM_reference/chrMref300.pac",
+        sa = "./chrM_reference/chrMref300.sa"
     output:
         sam = "./sam_files_rCRS/{SAMPLE_ID}.sam"
     params:
