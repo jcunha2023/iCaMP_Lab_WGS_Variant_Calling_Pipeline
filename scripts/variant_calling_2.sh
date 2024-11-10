@@ -14,11 +14,11 @@ SAMPLE_ID_TEMP="${CONSENSUS_REFERENCE##*/}"
 SAMPLE_ID="${SAMPLE_ID_TEMP%_consensus_ref.fa}"
 
 FQ_INPUT=$2
-SAM_OUTPUT="../sam_files_consensus/${SAMPLE_ID}_consensus.sam"
+SAM_OUTPUT="./sam_files_consensus/${SAMPLE_ID}_consensus.sam"
 
-temp_dir="../tmp/"
-vcf_dir="../vcf_files_consensus/"
-consensus_dir="../consensus_reference_sequences/"
+temp_dir="./tmp/"
+vcf_dir="./vcf_files_consensus/"
+consensus_dir="./consensus_reference_sequences/"
 
 ## create directory for the consensus reference
 gatk CreateSequenceDictionary -R ${CONSENSUS_REFERENCE}

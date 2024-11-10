@@ -10,7 +10,7 @@ import pandas as pd
 file = sys.argv[1]
 sampid = sys.argv[2]
 subjid = sys.argv[3]
-vcf_dir = "../vcf_files_rCRS/"
+vcf_dir = "./vcf_files_rCRS/"
 
 #filter by VAF
 df = pd.read_csv(file, comment="#", sep="\t", header=None, 
