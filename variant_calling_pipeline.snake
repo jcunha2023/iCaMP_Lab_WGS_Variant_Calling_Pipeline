@@ -83,7 +83,7 @@ rule circ_rCRS_bwa_idx:
     conda: "./config/bwa_ENV.yml"
     shell:
         '''
-        bwa index {output.circ_rCRS} -p {params.fa_file_prefix}{params.ext_len} 
+        bwa index {input.circ_rCRS} -p {params.fa_file_prefix}{params.ext_len} 
         '''
 # align fq files to circularized rCRS using bwa mem
 rule bwa:
