@@ -14,10 +14,13 @@ results_dir = config["results_dir"]
 
 
 #Parse input samples file, extract sample ids
-units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
+units = pd.read_table(config["units"], dtype=str).set_index(["path","sample"], drop=False)
 
 #Create sample ID list 
 INPUT_ID = units.index.get_level_values('sample').unique().tolist()
+
+#Create list of input read file directories 
+READ_DIR = units.index.get_level_values('path').unique().tolist()
 
 rule all:
     input:
@@ -28,7 +31,7 @@ rule all:
 # to fq files
 rule bam_2_fq:
     input:
-        bam = "../input_bams/{SAMPLE_ID}.bam"
+        bam = "{READ_DIR}/{SAMPLE_ID}.bam"
     output:
         fq = "../fq_files/{SAMPLE_ID}.fq"
     threads: 1
