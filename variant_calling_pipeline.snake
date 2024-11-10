@@ -123,7 +123,7 @@ rule variant_calling_1a:
     conda: "./config/samtools_gatk_ENV.yml"
     shell:
         '''
-        ./variant_calling_1.sh {input.sam} {params.reference} {params.interval}
+        bash ./scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval}
         '''
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
@@ -139,7 +139,7 @@ rule variant_calling_1b:
     conda: "./config/samtools_gatk_ENV.yml"
     shell:
         '''
-        ./variant_calling_1.sh {input.sam} {params.reference} {params.interval}
+        bash ./scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval}
         '''
 # bgzip vcf file
 rule bgzip_1:
@@ -216,10 +216,10 @@ rule filter_vcf_vaf_50:
     shell:
         '''
         cat {input.lin_vcf_splitted} | grep '^#' >> {output.lin_vcf_filtered_vaf_50}
-        python3 filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
+        python3 ./scripts/filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
 
         cat {input.circ_vcf_splitted} | grep '^#' >> {output.circ_vcf_filtered_vaf_50}
-        python3 filter_VAF.py {input.circ_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
+        python3 ./scripts/filter_VAF.py {input.circ_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
         '''
 
 # bgzip the filtered vaf > 50 vcf files
