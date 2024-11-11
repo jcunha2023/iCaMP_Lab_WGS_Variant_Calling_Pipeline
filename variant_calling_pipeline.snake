@@ -36,7 +36,7 @@ rule bam_2_fq:
     output:
         fq = WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq"
     threads: 1
-    conda: WORKING_DIR + "config/samtools_ENV.yml"
+    conda: WORKING_DIR + "/config/samtools_ENV.yml"
     shell:
         '''
         samtools bam2fq {input.bam} > {output.fq} 
@@ -97,7 +97,7 @@ rule circ_rCRS_bwa_idx:
     params:
         ext_len=300, #length of sequence extension
         fa_file_prefix= WORKING_DIR + "chrM_reference/chrMref" #prefix of fasta file
-    conda: WORKING_DIR + "config/bwa_ENV.yml"
+    conda: WORKING_DIR + "/config/bwa_ENV.yml"
     shell:
         '''
         bwa index {input.circ_rCRS} -p {params.fa_file_prefix}{params.ext_len}.fa 
