@@ -145,6 +145,7 @@ rule circ_bwa:
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the linear version of the rCRS
 rule variant_calling_1a:
+    priority:6
     input:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
     output:
@@ -165,6 +166,7 @@ rule variant_calling_1a:
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
 rule variant_calling_1b:
+    priority:6
     input:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam",
         circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
