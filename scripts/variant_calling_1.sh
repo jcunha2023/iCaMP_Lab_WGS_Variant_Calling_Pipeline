@@ -5,8 +5,8 @@ INPUT_SAM=$1
 REFERENCE=$2
 INTERVAL=$3
 
-temp_dir="tmp/"
-vcf_dir="vcf_files_rCRS/"
+temp_dir="/tmp/"
+vcf_dir="/vcf_files_rCRS/"
 
 # get sample id
 SAMPLE_ID_TEMP="${INPUT_SAM##*/}"
