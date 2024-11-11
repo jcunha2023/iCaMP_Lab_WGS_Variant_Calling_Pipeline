@@ -138,12 +138,13 @@ rule variant_calling_1a:
         vcf = "./vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf"
     params:
         interval = "chrM", 
-        reference = "./chrM_reference/chrMref.fa"
+        reference = "./chrM_reference/chrMref.fa",
+        refseq_type = "lin"
     threads: 16
     conda: "./config/samtools_gatk_ENV.yml"
     shell:
         '''
-        bash ./scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval}
+        bash ./scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval} {params.refseq_type}
         '''
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
@@ -154,12 +155,14 @@ rule variant_calling_1b:
         vcf = "./vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
     params:
         interval = "chrM:285-315",
-        reference = "./chrM_reference/chrMref300.fa"
+        reference = "chrM_reference/chrMref300.fa",
+        refseq_type = "circ"
+
     threads: 16
     conda: "./config/samtools_gatk_ENV.yml"
     shell:
         '''
-        bash ./scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval}
+        bash ./scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval} {params.refseq_type}
         '''
 # bgzip vcf file
 rule bgzip_1:
