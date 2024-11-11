@@ -166,7 +166,7 @@ rule variant_calling_1a:
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
 rule variant_calling_1b:
-    priority:6
+    priority:7
     input:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam",
         circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
@@ -187,6 +187,7 @@ rule variant_calling_1b:
         '''
 # bgzip vcf file
 rule bgzip_1:
+    priority:8
     input:
         lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf",
         circ_vcf= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
