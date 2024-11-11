@@ -6,8 +6,8 @@ REFERENCE=$2
 INTERVAL=$3
 REFTYPE=$4
 
-temp_dir="/tmp/"
-vcf_dir="/vcf_files_rCRS/"
+temp_dir="./tmp/"
+vcf_dir="./vcf_files_rCRS/"
 
 # get sample id
 SAMPLE_ID_TEMP="${INPUT_SAM##*/}"
