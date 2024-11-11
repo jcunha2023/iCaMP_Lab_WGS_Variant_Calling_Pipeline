@@ -7,8 +7,8 @@ INTERVAL=$3
 REFTYPE=$4
 WORKDIR=$5
 
-temp_dir= ${WORKDIR}/tmp/
-vcf_dir= ${WORKDIR}/vcf_files_rCRS/
+temp_dir=${WORKDIR}/tmp/
+vcf_dir=${WORKDIR}/vcf_files_rCRS/
 
 # get sample id
 SAMPLE_ID_TEMP="${INPUT_SAM##*/}"
