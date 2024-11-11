@@ -149,7 +149,9 @@ rule variant_calling_1a:
     input:
         sam = "sam_files_rCRS/{SAMPLE_ID}.sam"
     output:
-        vcf = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf"
+        vcf = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf",
+        idx="vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.idx",
+        stats="vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.stats",        
     params:
         interval = "chrM", 
         reference = "chrM_reference/chrMref.fa",
@@ -167,7 +169,9 @@ rule variant_calling_1b:
         sam = "sam_files_rCRS/{SAMPLE_ID}_circ.sam",
         circ_rCRS_dict="chrM_reference/chrMref300.dict"
     output:
-        vcf = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
+        vcf = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf",
+        idx="vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.idx",
+        stats="vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.stats",
     params:
         interval = "chrM:285-315",
         reference = "chrM_reference/chrMref300.fa",
