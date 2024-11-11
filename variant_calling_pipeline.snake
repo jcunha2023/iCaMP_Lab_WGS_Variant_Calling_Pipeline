@@ -89,8 +89,28 @@ rule circ_rCRS_bwa_idx:
         '''
         bwa index {input.circ_rCRS} -p {params.fa_file_prefix}{params.ext_len}.fa 
         '''
-# align fq files to circularized rCRS using bwa mem
+# align fq files to linear rCRS using bwa mem
 rule bwa:
+    priority:5
+    input:
+        fq =  "./fq_files/{SAMPLE_ID}.fq",
+        amb = "./chrM_reference/chrMref.fa.amb",
+        ann = "./chrM_reference/chrMref.fa.ann",
+        bwt = "./chrM_reference/chrMref.fa.bwt",
+        pac = "./chrM_reference/chrMref.fa.pac",
+        sa = "./chrM_reference/chrMref.fa.sa"
+    output:
+        sam = "./sam_files_rCRS/{SAMPLE_ID}.sam"
+    params:
+        reference ="./chrM_reference/chrMref.fa"
+    threads: 1
+    conda: "./config/bwa_ENV.yml"
+    shell:
+        '''
+        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
+        '''
+# align fq files to circularized rCRS using bwa mem
+rule circ_bwa:
     priority:5
     input:
         fq =  "./fq_files/{SAMPLE_ID}.fq",
@@ -100,7 +120,7 @@ rule bwa:
         pac = "./chrM_reference/chrMref300.fa.pac",
         sa = "./chrM_reference/chrMref300.fa.sa"
     output:
-        sam = "./sam_files_rCRS/{SAMPLE_ID}.sam"
+        sam = "./sam_files_rCRS/{SAMPLE_ID}_circ.sam"
     params:
         reference ="./chrM_reference/chrMref300.fa"
     threads: 1
@@ -129,7 +149,7 @@ rule variant_calling_1a:
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
 rule variant_calling_1b:
     input:
-        sam = "./sam_files_rCRS/{SAMPLE_ID}.sam"
+        sam = "./sam_files_rCRS/{SAMPLE_ID}_circ.sam"
     output:
         vcf = "./vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
     params:
