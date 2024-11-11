@@ -58,6 +58,20 @@ rule circ_rCRS:
         '''
          samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" | perl -ane 'BEGIN {{ print ">{params.seq_header}\n" }}  chomp; print ; END {{ print "\n" }}'  > {output.circ_rCRS}
         '''
+# Make a fasta dictionary file for the circularized rCRS sequence
+rule circ_rCRS_dict: 
+    priority:2
+    input:
+        circ_rCRS="./chrM_reference/chrMref300.fa"
+    output:
+        circ_rCRS_dict="./chrM_reference/chrMref300.dict"
+    params:
+
+    conda:"./config/samtools_ENV.yml"
+    shell:
+        '''
+         samtools dict {input.circ_rCRS} -o {output.circ_rCRS_dict}
+        '''
 #Generate samtools index file for circular rCRS sequence
 rule circ_rCRS_samtools_idx:
     priority:3
