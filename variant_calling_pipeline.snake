@@ -152,7 +152,7 @@ rule circ_bwa:
 rule variant_calling_1a:
     priority:6
     input:
-        sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
+        sam = lambda wildcards: WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}{SUFFIX}.sam"
     output:
         vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf",
         idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.idx",
@@ -173,7 +173,7 @@ rule variant_calling_1a:
 rule variant_calling_1b:
     priority:7
     input:
-        circ_sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam",
+        circ_sam = lambda wildcards: WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}{SUFFIX}.sam"
         circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
     output:
         circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf",
