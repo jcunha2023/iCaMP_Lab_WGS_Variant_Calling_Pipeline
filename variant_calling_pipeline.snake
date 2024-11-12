@@ -62,7 +62,7 @@ rule circ_rCRS:
         '''
 # Make a fasta dictionary file for the circularized rCRS sequence
 rule circ_rCRS_dict: 
-    priority:2
+    priority:3
     input:
         circ_rCRS= WORKING_DIR + "/chrM_reference/chrMref300.fa"
     output:
@@ -75,7 +75,7 @@ rule circ_rCRS_dict:
         '''
 #Generate samtools index file for circular rCRS sequence
 rule circ_rCRS_samtools_idx:
-    priority:3
+    priority:4
     input:
         circ_rCRS= WORKING_DIR + "/chrM_reference/chrMref300.fa"
     output:
@@ -87,7 +87,7 @@ rule circ_rCRS_samtools_idx:
         '''
 #Generate bwa index file for circular rCRS sequence
 rule circ_rCRS_bwa_idx:
-    priority:4
+    priority:5
     input: 
         circ_rCRS= WORKING_DIR + "/chrM_reference/chrMref300.fa"
     output:
@@ -106,7 +106,7 @@ rule circ_rCRS_bwa_idx:
         '''
 # align fq files to linear rCRS using bwa mem
 rule bwa:
-    priority:5
+    priority:6
     input:
         fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq",
         amb = WORKING_DIR + "/chrM_reference/chrMref.fa.amb",
@@ -126,7 +126,7 @@ rule bwa:
         '''
 # align fq files to circularized rCRS using bwa mem
 rule circ_bwa:
-    priority:6
+    priority:7
     input:
         fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq",
         amb = WORKING_DIR + "/chrM_reference/chrMref300.fa.amb",
@@ -147,7 +147,7 @@ rule circ_bwa:
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the linear version of the rCRS
 rule variant_calling_1a:
-    priority:7
+    priority:8
     input:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
     output:
@@ -167,7 +167,7 @@ rule variant_calling_1a:
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
 rule variant_calling_1b:
-    priority:8
+    priority:9
     input:
         circ_sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam",
         circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
