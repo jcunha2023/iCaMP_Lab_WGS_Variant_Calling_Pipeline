@@ -187,13 +187,13 @@ rule variant_calling_1b:
         '''
 # bgzip vcf file
 rule bgzip_1:
-    priority:8
+    priority:10
     input:
-        lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf",
-        circ_vcf= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
+        lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf",
+        circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf"
     output:
-        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
-        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz"  
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
+        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.gz"  
     threads: 1
     shell:
         '''
@@ -202,12 +202,13 @@ rule bgzip_1:
 
 # index vcf.qz file
 rule tabix_1:
+    priority:11
     input:
-        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
-        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz"  
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
+        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.gz"  
     output:
         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
-        circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
+        circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.gz.tbi"  
     params:
     threads: 1
     conda: WORKING_DIR + "/config/samtools_ENV.yml"
@@ -218,11 +219,12 @@ rule tabix_1:
 
 # split multiallelic variants
 rule split_multiallele_1:
+    priority:12
     input:
-        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
-        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz",
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
+        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.gz", 
         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
-        circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
+        circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.gz.tbi"     
     output:
         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
         circ_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_circ.vcf"
@@ -250,6 +252,7 @@ rule split_multiallele_1:
 
 # filter for only variants with VAF > 50
 rule filter_vcf_vaf_50:
+    priority:13
     input:
         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
         circ_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_circ.vcf"
@@ -269,6 +272,7 @@ rule filter_vcf_vaf_50:
 
 # bgzip the filtered vaf > 50 vcf files
 rule bgzip_2:
+    priority:14
     input:
         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
         circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
@@ -284,6 +288,7 @@ rule bgzip_2:
 
 # index the filtered vaf > 50 vcf.gz file
 rule tabix_2:
+    priority:15
     input:
         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
         circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
@@ -300,6 +305,7 @@ rule tabix_2:
 #Merge filtered VAF > 50 vcf files into a single file
 
 rule merge_vcf_1:
+    priority:16
     input:
         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
         circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
@@ -314,6 +320,7 @@ rule merge_vcf_1:
 
 # use the filtered vaf > 50 vcf.gz file to make a consensus referenece based on rCRS
 rule make_consensus_reference:
+    priority:17
     input:
         vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz",
         vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz.tbi"
@@ -328,6 +335,7 @@ rule make_consensus_reference:
         bcftools consensus -f {params.reference} {input.vcf_filtered_vaf_50_gz} > {output.consensus_ref}
         '''
 rule variant_calling_2:
+    priority:18
     input:
         consensus_ref = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa",
         fq = "fq_files/{SAMPLE_ID}.fq"
@@ -341,6 +349,7 @@ rule variant_calling_2:
         '''
         
 rule bgzip_3:
+    priority:19
     input:
         vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
     output:
@@ -353,6 +362,7 @@ rule bgzip_3:
         '''
 
 rule tabix_3:
+    priority:20
     input:
         vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
     output:
@@ -366,6 +376,7 @@ rule tabix_3:
         '''
 
 rule split_multiallele_2:
+    priority:21
     input:
         vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz",
         vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
