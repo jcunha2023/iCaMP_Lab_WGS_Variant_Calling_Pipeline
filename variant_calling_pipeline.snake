@@ -185,205 +185,205 @@ rule variant_calling_1b:
         '''
         bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
         '''
-# # bgzip vcf file
-# rule bgzip_1:
-#     priority:8
-#     input:
-#         lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf",
-#         circ_vcf= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
-#     output:
-#         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
-#         circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz"  
-#     threads: 1
-#     shell:
-#         '''
-#         bgzip -i {input.lin_vcf} && bgzip -i {input.circ_vcf}
-#         '''
+# bgzip vcf file
+rule bgzip_1:
+    priority:8
+    input:
+        lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf",
+        circ_vcf= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf"
+    output:
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
+        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz"  
+    threads: 1
+    shell:
+        '''
+        bgzip -i {input.lin_vcf} && bgzip -i {input.circ_vcf}
+        '''
 
-# # index vcf.qz file
-# rule tabix_1:
-#     input:
-#         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
-#         circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz"  
-#     output:
-#         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
-#         circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
-#     params:
-#     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_ENV.yml"
-#     shell:
-#         '''         
-#         tabix -p vcf {input.lin_vcf_gz} && tabix -p vcf {input.circ_vcf_gz}
-#         '''
+# index vcf.qz file
+rule tabix_1:
+    input:
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
+        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz"  
+    output:
+        lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
+    params:
+    threads: 1
+    conda: WORKING_DIR + "/config/samtools_ENV.yml"
+    shell:
+        '''         
+        tabix -p vcf {input.lin_vcf_gz} && tabix -p vcf {input.circ_vcf_gz}
+        '''
 
-# # split multiallelic variants
-# rule split_multiallele_1:
-#     input:
-#         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
-#         circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz",
-#         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
-#         circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
-#     output:
-#         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
-#         circ_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_circ.vcf"
-#     params:
-#         lin_reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
-#         circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
-#     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         gatk LeftAlignAndTrimVariants \
-#         -R {params.lin_reference} \
-#         -V {input.lin_vcf_gz} \
-#         -O {output.lin_vcf_splitted} \
-#         --split-multi-allelics \
-#         --keep-original-ac && \
+# split multiallelic variants
+rule split_multiallele_1:
+    input:
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_lin_rCRS.vcf.gz",
+        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz",
+        lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_circ_rCRS.vcf.gz.tbi"   
+    output:
+        lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
+        circ_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_circ.vcf"
+    params:
+        lin_reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
+        circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
+    threads: 1
+    conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        gatk LeftAlignAndTrimVariants \
+        -R {params.lin_reference} \
+        -V {input.lin_vcf_gz} \
+        -O {output.lin_vcf_splitted} \
+        --split-multi-allelics \
+        --keep-original-ac && \
 
-#         gatk LeftAlignAndTrimVariants \
-#         -R {params.circ_reference} \
-#         -V {input.circ_vcf_gz} \
-#         -O {output.circ_vcf_splitted} \
-#         --split-multi-allelics \
-#         --keep-original-ac 
-#         '''
+        gatk LeftAlignAndTrimVariants \
+        -R {params.circ_reference} \
+        -V {input.circ_vcf_gz} \
+        -O {output.circ_vcf_splitted} \
+        --split-multi-allelics \
+        --keep-original-ac 
+        '''
 
-# # filter for only variants with VAF > 50
-# rule filter_vcf_vaf_50:
-#     input:
-#         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
-#         circ_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_circ.vcf"
-#     output:
-#         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
-#         circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
-#     params:
-#         SAMPLE_ID = INPUT_ID
-#     shell:
-#         '''
-#         cat {input.lin_vcf_splitted} | grep '^#' >> {output.lin_vcf_filtered_vaf_50}
-#         python3 scripts/filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
+# filter for only variants with VAF > 50
+rule filter_vcf_vaf_50:
+    input:
+        lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
+        circ_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_circ.vcf"
+    output:
+        lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
+        circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
+    params:
+        SAMPLE_ID = INPUT_ID
+    shell:
+        '''
+        cat {input.lin_vcf_splitted} | grep '^#' >> {output.lin_vcf_filtered_vaf_50}
+        python3 scripts/filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
 
-#         cat {input.circ_vcf_splitted} | grep '^#' >> {output.circ_vcf_filtered_vaf_50}
-#         python3 scripts/filter_VAF.py {input.circ_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
-#         '''
+        cat {input.circ_vcf_splitted} | grep '^#' >> {output.circ_vcf_filtered_vaf_50}
+        python3 scripts/filter_VAF.py {input.circ_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} && \
+        '''
 
-# # bgzip the filtered vaf > 50 vcf files
-# rule bgzip_2:
-#     input:
-#         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
-#         circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
-#     output:
-#         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
-#         circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
-#     threads: 1
-#     shell:
-#         '''
-#         bgzip -i {input.lin_vcf_filtered_vaf_50} && \
-#         bgzip -i {input.circ_vcf_filtered_vaf_50}
-#         '''
+# bgzip the filtered vaf > 50 vcf files
+rule bgzip_2:
+    input:
+        lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
+        circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
+    output:
+        lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
+        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
+    threads: 1
+    shell:
+        '''
+        bgzip -i {input.lin_vcf_filtered_vaf_50} && \
+        bgzip -i {input.circ_vcf_filtered_vaf_50}
+        '''
 
-# # index the filtered vaf > 50 vcf.gz file
-# rule tabix_2:
-#     input:
-#         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
-#         circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
-#     output:
-#         lin_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz.tbi",
-#         circ_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz.tbi"
-#     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_ENV.yml"
-#     shell:
-#         '''         
-#         tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
-#         tabix -p vcf {input.circ_vcf_filtered_vaf_50_gz} && \
-#         '''
-# #Merge filtered VAF > 50 vcf files into a single file
+# index the filtered vaf > 50 vcf.gz file
+rule tabix_2:
+    input:
+        lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
+        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
+    output:
+        lin_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz.tbi",
+        circ_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz.tbi"
+    threads: 1
+    conda: WORKING_DIR + "/config/samtools_ENV.yml"
+    shell:
+        '''         
+        tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
+        tabix -p vcf {input.circ_vcf_filtered_vaf_50_gz} && \
+        '''
+#Merge filtered VAF > 50 vcf files into a single file
 
-# rule merge_vcf_1:
-#     input:
-#         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
-#         circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
-#     output:
-#         merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
-#     threads: 1
-#     conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
-#     shell:
-#         '''
-#         bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_vcf_filtered_vaf_50_gz} {input.circ_vcf_filtered_vaf_50_gz}
-#         '''
+rule merge_vcf_1:
+    input:
+        lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
+        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
+    output:
+        merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
+    threads: 1
+    conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
+    shell:
+        '''
+        bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_vcf_filtered_vaf_50_gz} {input.circ_vcf_filtered_vaf_50_gz}
+        '''
 
-# # use the filtered vaf > 50 vcf.gz file to make a consensus referenece based on rCRS
-# rule make_consensus_reference:
-#     input:
-#         vcf_filtered_vaf_50_gz = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz",
-#         vcf_filtered_vaf_50_gz_tbi = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz.tbi"
-#     output:
-#         consensus_ref = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
-#     params: 
-#         reference = "chrM_reference/chrMref.fa"
-#     threads: 1
-#     conda: "config/htslib_bcftools_ENV.yml"
-#     shell:
-#         '''
-#         bcftools consensus -f {params.reference} {input.vcf_filtered_vaf_50_gz} > {output.consensus_ref}
-#         '''
-# rule variant_calling_2:
-#     input:
-#         consensus_ref = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa",
-#         fq = "fq_files/{SAMPLE_ID}.fq"
-#     output:
-#         vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-#     params:
-#     conda: "config/variant_calling_2_ENV.yml"
-#     shell:
-#         '''
-#         variant_calling_2.sh {input.consensus_ref} {input.fq} 
-#         '''
+# use the filtered vaf > 50 vcf.gz file to make a consensus referenece based on rCRS
+rule make_consensus_reference:
+    input:
+        vcf_filtered_vaf_50_gz = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz",
+        vcf_filtered_vaf_50_gz_tbi = "vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz.tbi"
+    output:
+        consensus_ref = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
+    params: 
+        reference = "chrM_reference/chrMref.fa"
+    threads: 1
+    conda: "config/htslib_bcftools_ENV.yml"
+    shell:
+        '''
+        bcftools consensus -f {params.reference} {input.vcf_filtered_vaf_50_gz} > {output.consensus_ref}
+        '''
+rule variant_calling_2:
+    input:
+        consensus_ref = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa",
+        fq = "fq_files/{SAMPLE_ID}.fq"
+    output:
+        vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
+    params:
+    conda: "config/variant_calling_2_ENV.yml"
+    shell:
+        '''
+        variant_calling_2.sh {input.consensus_ref} {input.fq} 
+        '''
         
-# rule bgzip_3:
-#     input:
-#         vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-#     output:
-#         vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
-#     threads: 1
-#     conda: "config/htslib_ENV.yml"
-#     shell:
-#         '''
-#         bgzip -i {input.vcf}
-#         '''
+rule bgzip_3:
+    input:
+        vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
+    output:
+        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
+    threads: 1
+    conda: "config/htslib_ENV.yml"
+    shell:
+        '''
+        bgzip -i {input.vcf}
+        '''
 
-# rule tabix_3:
-#     input:
-#         vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
-#     output:
-#         vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
-#     params:
-#     threads: 1
-#     conda: "config/samtools_ENV.yml"
-#     shell:
-#         '''         
-#         tabix -p vcf {input.vcf_gz}
-#         '''
+rule tabix_3:
+    input:
+        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
+    output:
+        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
+    params:
+    threads: 1
+    conda: "config/samtools_ENV.yml"
+    shell:
+        '''         
+        tabix -p vcf {input.vcf_gz}
+        '''
 
-# rule split_multiallele_2:
-#     input:
-#         vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz",
-#         vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
-#     output:
-#         vcf_splitted = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf"
-#     params:
-#         reference = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
-#     threads: 1
-#     conda: "config/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         gatk LeftAlignAndTrimVariants \
-#         -R {params.reference} \
-#         -V {input.vcf_gz} \
-#         -O {output.vcf_splitted} \
-#         --split-multi-allelics \
-#         --keep-original-ac
-#         '''     
+rule split_multiallele_2:
+    input:
+        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz",
+        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
+    output:
+        vcf_splitted = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf"
+    params:
+        reference = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
+    threads: 1
+    conda: "config/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        gatk LeftAlignAndTrimVariants \
+        -R {params.reference} \
+        -V {input.vcf_gz} \
+        -O {output.vcf_splitted} \
+        --split-multi-allelics \
+        --keep-original-ac
+        '''     
 
 
 
