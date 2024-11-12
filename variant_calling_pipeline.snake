@@ -140,7 +140,7 @@ rule circ_bwa:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam"
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref300.fa",
-        prefix = WORKING_DIR + "/chrM_reference/{SAMPLE_ID}_circ"
+        prefix = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ"
     threads: 1
     conda: WORKING_DIR + "/config/bwa_ENV.yml"
     shell:
