@@ -25,7 +25,7 @@ INPUT_ID = list(sample_to_path.keys())
 rule all:
     input:
         #expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz", SAMPLE_ID = INPUT_ID)
-        expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf", SAMPLE_ID_CIRC = INPUT_ID),
+        expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID_CIRC}_circ_variants_called_against_rCRS.vcf", SAMPLE_ID_CIRC = INPUT_ID),
         expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf", SAMPLE_ID = INPUT_ID),
 
 
