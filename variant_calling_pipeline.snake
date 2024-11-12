@@ -128,7 +128,7 @@ rule bwa:
 rule circ_bwa:
     priority:5
     input:
-        fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq",
+        fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID_CIRC}.fq",
         amb = WORKING_DIR + "/chrM_reference/chrMref300.fa.amb",
         ann = WORKING_DIR + "/chrM_reference/chrMref300.fa.ann",
         bwt = WORKING_DIR + "/chrM_reference/chrMref300.fa.bwt",
