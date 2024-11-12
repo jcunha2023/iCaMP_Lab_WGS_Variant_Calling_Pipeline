@@ -117,12 +117,14 @@ rule bwa:
     output:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
     params:
-        reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
+        reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
+        prefix = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}"
+
     threads: 1
     conda: WORKING_DIR + "/config/bwa_ENV.yml"
     shell:
         '''
-        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
+        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {params.prefix}.sam
         '''
 # align fq files to circularized rCRS using bwa mem
 rule circ_bwa:
@@ -138,11 +140,12 @@ rule circ_bwa:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam"
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
+        prefix = WORKING_DIR + "/chrM_reference/{SAMPLE_ID}_circ"
     threads: 1
     conda: WORKING_DIR + "/config/bwa_ENV.yml"
     shell:
         '''
-        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
+        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {params.prefix}.sam
         '''
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the linear version of the rCRS
