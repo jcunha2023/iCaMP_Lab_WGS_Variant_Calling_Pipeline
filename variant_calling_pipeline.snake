@@ -122,7 +122,7 @@ rule bwa:
     conda: WORKING_DIR + "/config/bwa_ENV.yml"
     shell:
         '''
-        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam)
+        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
         '''
 # align fq files to circularized rCRS using bwa mem
 rule circ_bwa:
