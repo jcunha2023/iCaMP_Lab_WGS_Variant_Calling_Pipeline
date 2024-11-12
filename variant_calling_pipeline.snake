@@ -25,7 +25,7 @@ INPUT_ID = list(sample_to_path.keys())
 rule all:
     input:
         #expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz", SAMPLE_ID = INPUT_ID)
-        expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID_CIRC}_circ_variants_called_against_rCRS.vcf", SAMPLE_ID_CIRC = INPUT_ID),
+        expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf", SAMPLE_ID = INPUT_ID),
         expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf", SAMPLE_ID = INPUT_ID),
 
 
@@ -126,16 +126,16 @@ rule bwa:
         '''
 # align fq files to circularized rCRS using bwa mem
 rule circ_bwa:
-    priority:5
+    priority:6
     input:
-        fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID_CIRC}.fq",
+        fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq",
         amb = WORKING_DIR + "/chrM_reference/chrMref300.fa.amb",
         ann = WORKING_DIR + "/chrM_reference/chrMref300.fa.ann",
         bwt = WORKING_DIR + "/chrM_reference/chrMref300.fa.bwt",
         pac = WORKING_DIR + "/chrM_reference/chrMref300.fa.pac",
         sa = WORKING_DIR + "/chrM_reference/chrMref300.fa.sa"
     output:
-        circ_sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID_CIRC}_circ.sam"
+        circ_sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam"
     params:
         circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
     threads: 1
@@ -147,7 +147,7 @@ rule circ_bwa:
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the linear version of the rCRS
 rule variant_calling_1a:
-    priority:6
+    priority:7
     input:
         sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
     output:
@@ -167,14 +167,14 @@ rule variant_calling_1a:
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
 rule variant_calling_1b:
-    priority:7
+    priority:8
     input:
-        circ_sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID_CIRC}_circ.sam",
+        circ_sam = WORKING_DIR + "/sam_files_rCRS/{SAMPLE_ID}_circ.sam",
         circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
     output:
-        circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID_CIRC}_circ_variants_called_against_rCRS.vcf",
-        circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID_CIRC}_circ_variants_called_against_rCRS.vcf.idx",
-        circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID_CIRC}_circ_variants_called_against_rCRS.vcf.stats"
+        circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf",
+        circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.idx",
+        circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.stats"
     params:
         interval = "chrM:285-315",
         reference = WORKING_DIR + "/chrM_reference/chrMref300.fa",
