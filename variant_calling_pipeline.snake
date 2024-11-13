@@ -367,7 +367,6 @@ rule variant_calling_2:
         fq = "fq_files/{SAMPLE_ID}.fq"
     output:
         vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    params:
     conda: "config/variant_calling_2_ENV.yml"
     shell:
         '''
