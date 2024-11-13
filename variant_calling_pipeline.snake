@@ -311,7 +311,7 @@ rule tabix_2:
     shell:
         '''         
         tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
-        tabix -p vcf {input.circ_vcf_filtered_vaf_50_gz} && \
+        tabix -p vcf {input.circ_vcf_filtered_vaf_50_gz} 
         '''
 #Merge filtered VAF > 50 vcf files into a single file
 
@@ -319,7 +319,9 @@ rule merge_vcf_1:
     priority:17
     input:
         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
-        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
+        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz",
+        lin_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz.tbi",
+        circ_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz.tbi"
     output:
         merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
     threads: 1
