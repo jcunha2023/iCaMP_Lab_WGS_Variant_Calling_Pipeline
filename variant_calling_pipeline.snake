@@ -185,19 +185,20 @@ rule variant_calling_1b:
         '''
         bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
         '''
-# bgzip vcf file
-rule bgzip_1:
-    priority:10
-    input:
-        lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf",
-        circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf"
+
+# Sort and compress VCF file 
+rule sort_vcf_1:
+    input: 
+        circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf",
+        lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
     output:
-        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
-        circ_vcf_gz= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.gz"  
-    threads: 1
+        circ_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf.gz",
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
+    conda: "config/htslib_bcftools_ENV.yml"
     shell:
         '''
-        bgzip -i {input.lin_vcf} && bgzip -i {input.circ_vcf}
+        bcftools sort -Oz -o {output.circ_vcf_gz} {input.circ_vcf} && \
+        bcftools sort -Oz -o {output.lin_vcf_gz} {input.lin_vcf}
         '''
 
 # index vcf.qz file
@@ -281,20 +282,19 @@ rule filter_vcf_vaf_50_circ:
         '''
 
 
-# bgzip the filtered vaf > 50 vcf files
-rule bgzip_2:
-    priority:15
-    input:
+# Sort and index VCF file 
+rule sort_vcf_2:
+    input: 
         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
         circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
     output:
         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
-        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"
-    threads: 1
+        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"    
+    conda: "config/htslib_bcftools_ENV.yml"
     shell:
         '''
-        bgzip -i {input.lin_vcf_filtered_vaf_50} && \
-        bgzip -i {input.circ_vcf_filtered_vaf_50}
+        bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {lin_vcf_filtered_vaf_50} && \
+        bcftools sort -Oz -o {output.circ_vcf_filtered_vaf_50_gz} {circ_vcf_filtered_vaf_50}
         '''
 
 # index the filtered vaf > 50 vcf.gz file
@@ -373,25 +373,24 @@ rule variant_calling_2:
         bash scripts/variant_calling_2.sh {input.consensus_ref} {input.fq} 
         '''
         
-rule bgzip_3:
-    priority:21
-    input:
-        vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
+# Sort and index VCF file 
+rule sort_vcf_3:
+    input: 
+        consensus_vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
     output:
-        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
-    threads: 1
-    conda: "config/htslib_ENV.yml"
+        sorted_consensus_vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
+    conda: "config/htslib_bcftools_ENV.yml"
     shell:
         '''
-        bgzip -i {input.vcf}
+        bcftools sort -Oz -o {output.sorted_consensus_vcf_gz} {input.consensus_vcf} 
         '''
 
 rule tabix_4:
     priority:22
     input:
-        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
+        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
     output:
-        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
+        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
     params:
     threads: 1
     conda: "config/samtools_ENV.yml"
@@ -403,8 +402,8 @@ rule tabix_4:
 rule split_multiallele_2:
     priority:23
     input:
-        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz",
-        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
+        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz",
+        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
     output:
         vcf_splitted = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted_circ.vcf"
     params:
