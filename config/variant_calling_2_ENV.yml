@@ -10,6 +10,7 @@ dependencies:
   - bzip2=1.0.8=h4bc722e_7
   - c-ares=1.33.1=heb4867d_0
   - ca-certificates=2024.8.30=hbcca054_0
+  - gatk4=4.2.1.0=hdfd78af_0
   - htslib=1.20=h5efdd21_2
   - keyutils=1.6.1=h166bdaf_0
   - krb5=1.21.3=h659f571_0
