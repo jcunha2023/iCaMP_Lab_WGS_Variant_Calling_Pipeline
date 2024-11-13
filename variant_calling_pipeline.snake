@@ -351,11 +351,11 @@ rule make_consensus_reference:
         vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz",
         vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz.tbi"
     output:
-        consensus_ref = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
+        consensus_ref = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
     params: 
-        reference = "chrM_reference/chrMref.fa"
+        reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
     threads: 1
-    conda: "config/htslib_bcftools_ENV.yml"
+    conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
     shell:
         '''
         bcftools consensus -f {params.reference} {input.vcf_filtered_vaf_50_gz} > {output.consensus_ref}
@@ -363,23 +363,25 @@ rule make_consensus_reference:
 rule variant_calling_2:
     priority:20
     input:
-        consensus_ref = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa",
-        fq = "fq_files/{SAMPLE_ID}.fq"
+        consensus_ref = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa",
+        fq = WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq"
     output:
-        vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    conda: "config/variant_calling_2_ENV.yml"
+        vcf = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
+    params:
+        working_dir = WORKING_DIR
+    conda: WORKING_DIR + "/config/variant_calling_2_ENV.yml"
     shell:
         '''
-        bash scripts/variant_calling_2.sh {input.consensus_ref} {input.fq} 
+        bash scripts/variant_calling_2.sh {input.consensus_ref} {input.fq} {params.workdir}
         '''
         
 # Sort and index VCF file 
 rule sort_vcf_3:
     input: 
-        consensus_vcf = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
+        consensus_vcf = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
     output:
-        sorted_consensus_vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
-    conda: "config/htslib_bcftools_ENV.yml"
+        sorted_consensus_vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
+    conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
     shell:
         '''
         bcftools sort -Oz -o {output.sorted_consensus_vcf_gz} {input.consensus_vcf} 
@@ -388,12 +390,12 @@ rule sort_vcf_3:
 rule tabix_4:
     priority:22
     input:
-        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
+        vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
     output:
-        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
+        vcf_gz_tbi = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
     params:
     threads: 1
-    conda: "config/samtools_ENV.yml"
+    conda: WORKING_DIR + "/config/samtools_ENV.yml"
     shell:
         '''         
         tabix -p vcf {input.vcf_gz}
@@ -402,14 +404,14 @@ rule tabix_4:
 rule split_multiallele_2:
     priority:23
     input:
-        vcf_gz = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz",
-        vcf_gz_tbi = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
+        vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz",
+        vcf_gz_tbi = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
     output:
-        vcf_splitted = "vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted_circ.vcf"
+        vcf_splitted = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted_circ.vcf"
     params:
-        reference = "consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
+        reference = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
     threads: 1
-    conda: "config/samtools_gatk_ENV.yml"
+    conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
     shell:
         '''
         gatk LeftAlignAndTrimVariants \
