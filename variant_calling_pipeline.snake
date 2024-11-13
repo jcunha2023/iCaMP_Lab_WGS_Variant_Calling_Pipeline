@@ -371,7 +371,7 @@ rule variant_calling_2:
     conda: "config/variant_calling_2_ENV.yml"
     shell:
         '''
-        variant_calling_2.sh {input.consensus_ref} {input.fq} 
+        bash scripts/variant_calling_2.sh {input.consensus_ref} {input.fq} 
         '''
         
 rule bgzip_3:
