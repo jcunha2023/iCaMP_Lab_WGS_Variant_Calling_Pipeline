@@ -24,10 +24,8 @@ INPUT_ID = list(sample_to_path.keys())
 
 rule all:
     input:
-        expand("vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted_circ.vcf", SAMPLE_ID = INPUT_ID)
-        # expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_variants_called_against_rCRS.vcf", SAMPLE_ID = INPUT_ID),
-        # expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf", SAMPLE_ID = INPUT_ID),
-
+        #expand("vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted_circ.vcf", SAMPLE_ID = INPUT_ID)
+        expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz", SAMPLE_ID = INPUT_ID)
 
 # convert bam files (ideally NUMT filtered chrM reads (previously aligned to chrM with bwa))
 # to fq files
@@ -344,83 +342,83 @@ rule tabix_3:
         tabix -p vcf {input.merged_vcf}
         '''
 
-# use the filtered vaf > 50 vcf.gz file to make a consensus referenece based on rCRS
-rule make_consensus_reference:
-    priority:19
-    input:
-        vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz",
-        vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz.tbi"
-    output:
-        consensus_ref = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
-    params: 
-        reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
-    threads: 1
-    conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
-    shell:
-        '''
-        bcftools consensus -f {params.reference} {input.vcf_filtered_vaf_50_gz} > {output.consensus_ref}
-        '''
-rule variant_calling_2:
-    priority:20
-    input:
-        consensus_ref = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa",
-        fq = WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq"
-    output:
-        vcf = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    params:
-        working_dir = WORKING_DIR
-    conda: WORKING_DIR + "/config/variant_calling_2_ENV.yml"
-    shell:
-        '''
-        bash scripts/variant_calling_2.sh {input.consensus_ref} {input.fq} {params.workdir}
-        '''
+# # use the filtered vaf > 50 vcf.gz file to make a consensus referenece based on rCRS
+# rule make_consensus_reference:
+#     priority:19
+#     input:
+#         vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz",
+#         vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz.tbi"
+#     output:
+#         consensus_ref = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
+#     params: 
+#         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
+#     threads: 1
+#     conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
+#     shell:
+#         '''
+#         bcftools consensus -f {params.reference} {input.vcf_filtered_vaf_50_gz} > {output.consensus_ref}
+#         '''
+# rule variant_calling_2:
+#     priority:20
+#     input:
+#         consensus_ref = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa",
+#         fq = WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq"
+#     output:
+#         vcf = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
+#     params:
+#         working_dir = WORKING_DIR
+#     conda: WORKING_DIR + "/config/variant_calling_2_ENV.yml"
+#     shell:
+#         '''
+#         bash scripts/variant_calling_2.sh {input.consensus_ref} {input.fq} {params.workdir}
+#         '''
         
-# Sort and index VCF file 
-rule sort_vcf_3:
-    input: 
-        consensus_vcf = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    output:
-        sorted_consensus_vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
-    conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
-    shell:
-        '''
-        bcftools sort -Oz -o {output.sorted_consensus_vcf_gz} {input.consensus_vcf} 
-        '''
+# # Sort and index VCF file 
+# rule sort_vcf_3:
+#     input: 
+#         consensus_vcf = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
+#     output:
+#         sorted_consensus_vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
+#     conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
+#     shell:
+#         '''
+#         bcftools sort -Oz -o {output.sorted_consensus_vcf_gz} {input.consensus_vcf} 
+#         '''
 
-rule tabix_4:
-    priority:22
-    input:
-        vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
-    output:
-        vcf_gz_tbi = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
-    params:
-    threads: 1
-    conda: WORKING_DIR + "/config/samtools_ENV.yml"
-    shell:
-        '''         
-        tabix -p vcf {input.vcf_gz}
-        '''
+# rule tabix_4:
+#     priority:22
+#     input:
+#         vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz"
+#     output:
+#         vcf_gz_tbi = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
+#     params:
+#     threads: 1
+#     conda: WORKING_DIR + "/config/samtools_ENV.yml"
+#     shell:
+#         '''         
+#         tabix -p vcf {input.vcf_gz}
+#         '''
 
-rule split_multiallele_2:
-    priority:23
-    input:
-        vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz",
-        vcf_gz_tbi = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
-    output:
-        vcf_splitted = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted_circ.vcf"
-    params:
-        reference = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
-    threads: 1
-    conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
-    shell:
-        '''
-        gatk LeftAlignAndTrimVariants \
-        -R {params.reference} \
-        -V {input.vcf_gz} \
-        -O {output.vcf_splitted} \
-        --split-multi-allelics \
-        --keep-original-ac
-        '''     
+# rule split_multiallele_2:
+#     priority:23
+#     input:
+#         vcf_gz = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz",
+#         vcf_gz_tbi = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_sorted.vcf.gz.tbi"
+#     output:
+#         vcf_splitted = WORKING_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted_circ.vcf"
+#     params:
+#         reference = WORKING_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
+#     threads: 1
+#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     shell:
+#         '''
+#         gatk LeftAlignAndTrimVariants \
+#         -R {params.reference} \
+#         -V {input.vcf_gz} \
+#         -O {output.vcf_splitted} \
+#         --split-multi-allelics \
+#         --keep-original-ac
+#         '''     
 
 
 
