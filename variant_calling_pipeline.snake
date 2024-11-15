@@ -293,8 +293,8 @@ rule sort_vcf_2:
     conda: "config/htslib_bcftools_ENV.yml"
     shell:
         '''
-        bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {lin_vcf_filtered_vaf_50} && \
-        bcftools sort -Oz -o {output.circ_vcf_filtered_vaf_50_gz} {circ_vcf_filtered_vaf_50}
+        bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {input.lin_vcf_filtered_vaf_50} && \
+        bcftools sort -Oz -o {output.circ_vcf_filtered_vaf_50_gz} {input.circ_vcf_filtered_vaf_50}
         '''
 
 # index the filtered vaf > 50 vcf.gz file
