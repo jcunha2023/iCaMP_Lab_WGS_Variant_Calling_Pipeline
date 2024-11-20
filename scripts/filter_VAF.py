@@ -10,6 +10,7 @@ import pandas as pd
 file = sys.argv[1]
 sampid = sys.argv[2]
 subjid = sys.argv[3]
+refseq_type = sys.argv[4]
 vcf_dir = "./vcf_files_rCRS/"
 
 #filter by VAF
@@ -23,5 +24,5 @@ filtered_df["SUBJID"] = subjid
 out_df = filtered_df.iloc[:, : 10]
 
 #output file
-out_df.to_csv(vcf_dir + sampid + '_variants_called_against_rCRS_splitted_filtered.vcf', sep = '\t',header=False, index=False, mode="a")
+out_df.to_csv(vcf_dir + sampid + '_variants_called_against_rCRS_splitted_filtered_' + refseq_type + '.vcf', sep = '\t',header=False, index=False, mode="a")
 
