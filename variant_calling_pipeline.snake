@@ -260,12 +260,11 @@ rule filter_vcf_vaf_50_lin:
         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
     params:
         SAMPLE_ID = INPUT_ID,
-        SUBJECT_ID = INPUT_ID,
-        REFSEQ_TYPE = "lin"
+        SUBJECT_ID = INPUT_ID
     shell:
         '''
         cat {input.lin_vcf_splitted} | grep '^#' >> {output.lin_vcf_filtered_vaf_50}
-        python3 scripts/filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SUBJECT_ID} {params.REFSEQ_TYPE}
+        python3 scripts/filter_VAF_1.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SUBJECT_ID} 
         '''
 
 # filter for only variants with VAF > 50 (circular_reference_sequence)
@@ -277,12 +276,11 @@ rule filter_vcf_vaf_50_circ:
         circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
     params:
         SAMPLE_ID = INPUT_ID,
-        SUBJECT_ID = INPUT_ID,
-        REFSEQ_TYPE = "circ"
+        SUBJECT_ID = INPUT_ID
     shell:
         '''
         cat {input.circ_vcf_splitted} | grep '^#' >> {output.circ_vcf_filtered_vaf_50}
-        python3 scripts/filter_VAF.py {input.circ_vcf_splitted} {params.SAMPLE_ID} {params.SUBJECT_ID} {params.REFSEQ_TYPE}
+        python3 scripts/filter_VAF_2.py {input.circ_vcf_splitted} {params.SAMPLE_ID} {params.SUBJECT_ID} 
         '''
 
 # Sort and index VCF file 
