@@ -284,6 +284,7 @@ rule filter_vcf_vaf_50_circ:
 
 # Sort and index VCF file 
 rule sort_vcf_2:
+    priority:15
     input: 
         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
         circ_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf"
@@ -296,7 +297,6 @@ rule sort_vcf_2:
         bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {input.lin_vcf_filtered_vaf_50} && \
         bcftools sort -Oz -o {output.circ_vcf_filtered_vaf_50_gz} {input.circ_vcf_filtered_vaf_50}
         '''
-
 # index the filtered vaf > 50 vcf.gz file
 rule tabix_2:
     priority:16
@@ -313,30 +313,75 @@ rule tabix_2:
         tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
         tabix -p vcf {input.circ_vcf_filtered_vaf_50_gz} 
         '''
-#Merge filtered VAF > 50 vcf files into a single file
 
-rule merge_vcf_1:
+# Left align the filtered variant calls, index them
+rule normalize_vcf:
     priority:17
     input:
         lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
-        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz",
+        circ_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz"    
+    output:
+        lin_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz",
+        lin_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz.tbi",
+        circ_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.norm.vcf.gz",
+        circ_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_.norm.vcf.gz.tbi"
+    params:
+        lin_reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
+        circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
+    threads: 1
+    conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
+    shell:
+        '''
+        bcftools norm -m-any -f {params.lin_reference} {input.lin_vcf_filtered_vaf_50_gz} | bgzip > {output.lin_norm_vcf_gz} && \
+        tabix -p vcf {output.lin_norm_vcf_gz}
+
+        bcftools norm -m-any -f {params.circ_reference} {input.circ_vcf_filtered_vaf_50_gz} | bgzip > {output.circ_norm_vcf_gz} && \
+        tabix -p vcf {output.circ_norm_vcf_gz}
+        '''
+
+# Adjust coordinates of the circular reference sequence-called variants to factor the 300bp offset applied earlier
+rule adjust_circ_coordinates:
+    priority: 17
+    input:
+        norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.norm.vcf.gz",
+        norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.norm.vcf.gz.tbi"
+    output:
+        adjusted_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_circular.vcf.gz",
+        adjusted_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_circular.vcf.gz.tbi"
+    params:
+        offset = 300,  #Length of 
+        mtlen = 16569    #Total length of the rCRS
+    threads: 1
+    conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
+    shell:
+        '''
+        bcftools view {input.norm_vcf_gz} | \
+        perl -ane 'if(/^#/){{print}}else{{$F[1]=($F[1]-{params.offset})%{params.mtlen}; print join "\t",@F; print "\n"}}' | \
+        bgzip > {output.adjusted_vcf_gz} && \
+        tabix -p vcf {output.adjusted_vcf_gz}
+        '''
+# Merge the vcfs together
+rule merge_vcf_1:
+    priority: 18
+    input:
+        lin_vcf_filtered_vaf_50_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz",
+        circ_vcf_adjusted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_circular.vcf.gz",
         lin_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf.gz.tbi",
-        circ_vcf_filtered_vaf_50_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.vcf.gz.tbi"
+        circ_vcf_adjusted_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_circular.vcf.gz.tbi"
     output:
         merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
     threads: 1
     conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
     shell:
         '''
-        bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_vcf_filtered_vaf_50_gz} {input.circ_vcf_filtered_vaf_50_gz}
+        bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_vcf_filtered_vaf_50_gz} {input.circ_vcf_adjusted}
         '''
 rule tabix_3:
-    priority:18
+    priority: 19
     input:
         merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
     output:
         vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz.tbi"
-    params:
     threads: 1
     conda: "config/samtools_ENV.yml"
     shell:
