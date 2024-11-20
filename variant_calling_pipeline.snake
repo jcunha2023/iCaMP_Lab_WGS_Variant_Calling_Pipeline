@@ -324,7 +324,7 @@ rule normalize_vcf:
         lin_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz",
         lin_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz.tbi",
         circ_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ.norm.vcf.gz",
-        circ_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_.norm.vcf.gz.tbi"
+        circ_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_circ_norm.vcf.gz.tbi"
     params:
         lin_reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
         circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
