@@ -21,7 +21,7 @@ df["AF"] = pd.to_numeric(df["AF"])
 #debug print statement
 print(df.head())
 
-filtered_df = df[df['AF'] > 0.5]
+filtered_df = df[df['AF'] > 0.5].copy()
 filtered_df["SAMPID"] = sampid
 filtered_df["SUBJID"] = subjid
 out_df = filtered_df.iloc[:, : 10]
