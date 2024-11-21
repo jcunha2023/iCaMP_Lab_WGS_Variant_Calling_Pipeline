@@ -16,8 +16,12 @@ vcf_dir = "./vcf_files_rCRS/"
 df = pd.read_csv(file, comment="#", sep="\t", header=None, 
                   names=["CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT","RESULT"])
 df[["GT","AD","AF","DP","F1R2","F2R1","SB"]] = df["RESULT"].str.split(":",expand=True).iloc[:, : 7]
-df["AF"] = pd.to_numeric(df["AF"])
-filtered_df = df[df['AF'] > 0.5]
+df["AF"] = pd.to_numeric(df["AF"], errors="coerce")
+
+#debug print statement
+print(df.head())
+
+filtered_df = df[df['AF'] > 0.5].copy()
 filtered_df["SAMPID"] = sampid
 filtered_df["SUBJID"] = subjid
 out_df = filtered_df.iloc[:, : 10]
