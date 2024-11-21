@@ -15,9 +15,9 @@ vcf_dir = "./vcf_files_rCRS/"
 #filter by VAF
 df = pd.read_csv(file, comment="#", sep="\t", header=None, 
                   names=["CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT","RESULT"])
-df[["GT","AD","VAF","DP","F1R2","F2R1","SB"]] = df["RESULT"].str.split(":",expand=True).iloc[:, : 7]
-df["VAF"] = pd.to_numeric(df["VAF"])
-filtered_df = df[df['VAF'] > 0.5]
+df[["GT","AD","AF","DP","F1R2","F2R1","SB"]] = df["RESULT"].str.split(":",expand=True).iloc[:, : 7]
+df["AF"] = pd.to_numeric(df["AF"])
+filtered_df = df[df['AF'] > 0.5]
 filtered_df["SAMPID"] = sampid
 filtered_df["SUBJID"] = subjid
 out_df = filtered_df.iloc[:, : 10]
