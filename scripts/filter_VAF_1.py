@@ -52,8 +52,6 @@ except Exception as e:
 filtered_df["SAMPID"] = sampid
 filtered_df["SUBJID"] = subjid
 
-# Ensure output directory exists
-os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
 # Write the header and filtered data
 try:
