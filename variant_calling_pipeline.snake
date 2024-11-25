@@ -272,11 +272,10 @@ rule filter_vcf_vaf_50_lin:
     output:
         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
     params:
-        SAMPLE_ID = INPUT_ID,
-        SUBJECT_ID = INPUT_ID
+        SAMPLE_ID = INPUT_ID
     shell:
         '''
-        python3 scripts/filter_VAF_1.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SUBJECT_ID} {output.lin_vcf_filtered_vaf_50}
+        python3 scripts/filter_VAF_1.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.lin_vcf_filtered_vaf_50}
         '''
 # # filter for only variants with VAF > 50 (circular_reference_sequence)
 # rule filter_vcf_vaf_50_circ:
