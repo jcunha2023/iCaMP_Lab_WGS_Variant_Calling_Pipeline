@@ -259,8 +259,6 @@ rule create_filter_vcf_vaf_50_lin_header:
     output:
         lin_vcf_filtered_vaf_50_template = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
     params:
-        SAMPLE_ID = INPUT_ID,
-        SUBJECT_ID = INPUT_ID
     shell:
         '''
         cat {input.lin_vcf_splitted} | grep '^#' >> {output.lin_vcf_filtered_vaf_50_template} 
