@@ -31,5 +31,5 @@ out_df = filtered_df.iloc[:, : 10]
 print(out_df.head())
 
 #output file
-out_df.to_csv(output_file, sep = '\t',header=False, index=False, mode="a")
+out_df.to_csv(output_file, sep = '\t',header=False, index=False)
 
