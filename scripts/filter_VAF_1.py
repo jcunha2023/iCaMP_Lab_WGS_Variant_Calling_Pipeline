@@ -13,6 +13,16 @@ subjid = sys.argv[3]
 output_file = sys.argv[4]
 vcf_dir = "./vcf_files_rCRS/"
 
+# Open the input file and extract the header
+
+header_lines = []
+with open(file, "r") as f:
+    for line in f:
+        if line.startswith("#"):
+            header_lines.append(line)  # get header lines
+        else:
+            break
+
 #filter by VAF
 df = pd.read_csv(file, comment="#", sep="\t", header=None, 
                   names=["CHROM","POS","ID","REF","ALT","QUAL","FILTER","INFO","FORMAT","RESULT"])
@@ -25,11 +35,10 @@ print(df.head())
 filtered_df = df[df['AF'] > 0.5].copy()
 filtered_df["SAMPID"] = sampid
 filtered_df["SUBJID"] = subjid
-out_df = filtered_df.iloc[:, : 10]
 
-#debug print statement
-print(out_df.head())
 
-#output file
-out_df.to_csv(output_file, sep = '\t',header=False, index=False)
+with open(output_file, "w") as f:
+    f.writelines(header_lines)  # Write the header lines to the output file
+filtered_df.iloc[:, :10].to_csv(output_file, sep="\t", header=False, index=False, mode="a") 
+
 
