@@ -10,6 +10,7 @@ import pandas as pd
 file = sys.argv[1]
 sampid = sys.argv[2]
 subjid = sys.argv[3]
+output_file = sys.argv[4]
 vcf_dir = "./vcf_files_rCRS/"
 
 #filter by VAF
@@ -30,5 +31,5 @@ out_df = filtered_df.iloc[:, : 10]
 print(out_df.head())
 
 #output file
-out_df.to_csv(vcf_dir + sampid + '_variants_called_against_rCRS_splitted_filtered_lin.vcf', sep = '\t',header=False, index=False, mode="a")
+out_df.to_csv(output_file, sep = '\t',header=False, index=False, mode="a")
 
