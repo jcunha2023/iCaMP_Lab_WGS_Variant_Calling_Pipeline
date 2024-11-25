@@ -252,17 +252,17 @@ rule split_multiallele_1:
         '''
 
 # filter for only variants with VAF > 50 (linear reference sequence)
-rule create_filter_vcf_vaf_50_lin_header:
-    priority:13
-    input:
-        lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf"
-    output:
-        lin_vcf_filtered_vaf_50_template = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
-    params:
-    shell:
-        '''
-        cat {input.lin_vcf_splitted} | grep '^#' >> {output.lin_vcf_filtered_vaf_50_template} 
-        '''
+# rule create_filter_vcf_vaf_50_lin_header:
+#     priority:13
+#     input:
+#         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf"
+#     output:
+#         lin_vcf_filtered_vaf_50_template = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
+#     params:
+#     shell:
+#         '''
+#         cat {input.lin_vcf_splitted} | grep '^#' >> {output.lin_vcf_filtered_vaf_50_template} 
+#         '''
 
 # filter for only variants with VAF > 50 (linear reference sequence)
 rule filter_vcf_vaf_50_lin:
