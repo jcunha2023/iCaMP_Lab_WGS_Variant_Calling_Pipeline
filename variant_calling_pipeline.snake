@@ -279,9 +279,9 @@ rule filter_vcf_vaf_50_lin:
         vcf_filt_temp_name = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_lin_temp_vars.vcf"
     shell:
         '''
-        cat {input.lin_vcf_splitted} | grep '^#' > {output.vcf_header_temp} 
+        cat {input.lin_vcf_splitted} | grep '^#' > {output.vcf_header_temp} && \
 
-        python3 scripts/filter_VAF_1.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SUBJECT_ID} {params.vcf_filt_temp_name}
+        python3 scripts/filter_VAF_1.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SUBJECT_ID} {params.vcf_filt_temp_name} && \
         
         cat {output.vcf_header_temp} {output.vcf_filt_temp} > {output.lin_vcf_filtered_vaf_50} 
         '''
