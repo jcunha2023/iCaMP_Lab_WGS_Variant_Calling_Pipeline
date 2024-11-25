@@ -270,7 +270,7 @@ rule filter_vcf_vaf_50_lin:
     input:
         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf"
     output:
-        vcf_header_temp = temp(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_lin_temp_header.vcf")
+        vcf_header_temp = temp(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_lin_temp_header.vcf"),
         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
     params:
         SAMPLE_ID = INPUT_ID,
