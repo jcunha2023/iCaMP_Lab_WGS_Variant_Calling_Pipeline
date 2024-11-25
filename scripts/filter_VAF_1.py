@@ -26,6 +26,9 @@ filtered_df["SAMPID"] = sampid
 filtered_df["SUBJID"] = subjid
 out_df = filtered_df.iloc[:, : 10]
 
+#debug print statement
+print(out_df.head())
+
 #output file
 out_df.to_csv(vcf_dir + sampid + '_variants_called_against_rCRS_splitted_filtered_lin.vcf', sep = '\t',header=False, index=False, mode="a")
 
