@@ -11,11 +11,6 @@ sampid = sys.argv[2]  # Sample ID
 subjid = sys.argv[3]  # Subject ID
 output_file = sys.argv[4]  # Full path to the output VCF file
 
-# Debugging: Print input arguments
-print(f"Input file: {file}")
-print(f"Sample ID: {sampid}")
-print(f"Subject ID: {subjid}")
-print(f"Output file: {output_file}")
 
 # Check if input file exists
 if not os.path.exists(file):
@@ -31,7 +26,7 @@ with open(file, "r") as f:
         else:
             break
 
-# Load VCF data into a dataframe
+# Load VCF data into dataframe
 try:
     df = pd.read_csv(file, comment="#", sep="\t", header=None,
                      names=["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", "RESULT"])
@@ -39,7 +34,7 @@ except Exception as e:
     print(f"Error reading VCF file: {e}")
     sys.exit(1)
 
-# Split the RESULT column and filter based on VAF
+# Split RESULT column and filter based on VAF > 0.5
 try:
     df[["GT", "AD", "AF", "DP", "F1R2", "F2R1", "SB"]] = df["RESULT"].str.split(":", expand=True).iloc[:, :7]
     df["AF"] = pd.to_numeric(df["AF"], errors="coerce")
@@ -53,7 +48,7 @@ filtered_df["SAMPID"] = sampid
 filtered_df["SUBJID"] = subjid
 
 
-# Write the header and filtered data
+# Write header and data to a VCF file
 try:
     with open(output_file, "w") as f:
         f.writelines(header_lines)
