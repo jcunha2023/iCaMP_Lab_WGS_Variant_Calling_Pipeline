@@ -11,7 +11,6 @@ file = sys.argv[1]
 sampid = sys.argv[2]
 subjid = sys.argv[3]
 output_file = sys.argv[4]
-vcf_dir = "./vcf_files_rCRS/"
 
 # Open the input file and extract the header
 
@@ -39,6 +38,8 @@ filtered_df["SUBJID"] = subjid
 
 with open(output_file, "w") as f:
     f.writelines(header_lines)  # Write the header lines to the output file
-filtered_df.iloc[:, :10].to_csv(output_file, sep="\t", header=False, index=False, mode="a") 
+
+print(header_lines)
+#filtered_df.iloc[:, :10].to_csv(output_file, sep="\t", header=False, index=False, mode="a") 
 
 
