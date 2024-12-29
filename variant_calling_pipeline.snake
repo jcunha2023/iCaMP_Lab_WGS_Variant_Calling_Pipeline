@@ -2,7 +2,10 @@
 ########## This is a pipeline to call variants from WGS data developed by Ariel Xu #################
 ####################################################################################################
 import os 
+
+#modify this based on location of BAMs
 BAM_DIR="/restricted/projectnb/icamp/gtex/blood_WGS/2024_WGS_Calling_NOT_NUMT_Filtered/input_bams"
+
 ### UPDATE THIS EVERY TIME BASED ON FULL EXTENSION ###
 # Get all bam files
 bam_files = []
@@ -15,7 +18,7 @@ rule all:
     input:
         expand("../vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf", SAMPLE_ID = INPUT_ID)
 # convert bam files (ideally NUMT filtered chrM reads (previously aligned to chrM with bwa))
-# to fq files
+# to fq files, but first sort by read name for alignmentment of paired reads
 rule bam_2_fq:
     input:
         bam = "../input_bams/{SAMPLE_ID}_chrM_reads_sorted.bam"
@@ -25,7 +28,7 @@ rule bam_2_fq:
     conda: "../envs/samtools_ENV.yml"
     shell:
         '''
-        samtools bam2fq {input.bam} > {output.fq} 
+        samtools sort -n {input.bam} | samtools bam2fq  > {output.fq} 
         '''    
 # align fq files to rCRS using bwa mem
 rule bwa:

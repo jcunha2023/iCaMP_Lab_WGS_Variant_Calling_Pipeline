@@ -29,13 +29,6 @@ samtools faidx ${CONSENSUS_REFERENCE}
 ## name this reference
 bwa index ${CONSENSUS_REFERENCE} -p ${CONSENSUS_INDEX}
 
-# just save the fq file already converted
-# ## transform all bam files into fastq format
-# for i in ./*.bam; 
-#     do samtools bam2fq $i > ${i%.bam}.fq; 
-# done
-
-
 ## using BWA mem to align WGS reads to our consensus reference
 bwa mem ${CONSENSUS_INDEX} ${FQ_INPUT} -K 100000000 -p -v 3 -Y > ${SAM_OUTPUT}
 #rm ${FQ_INPUT}
