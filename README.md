@@ -39,5 +39,5 @@ cp $BAM_SOURCE_DIR/*.bam ./input_bams
 #  and get number of jobs that will be run
 snakemake -s NUMT_pipeline_v1.snake --dry-run
 # Run the pipeline using cluster-generic
-snakemake -s NUMT_pipeline_v1.snake --executor cluster-generic -use-conda \
+snakemake -s NUMT_pipeline_v1.snake --executor cluster-generic --use-conda \
 --cluster-generic-submit-cmd "qsub -P icamp -pe omp {threads}" --jobs ### fill this in based on dry-run output ###
