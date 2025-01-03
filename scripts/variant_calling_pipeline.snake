@@ -65,6 +65,7 @@ rule mark_duplicates_1:
         '''
         gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
         '''
+
 # Run variant calling script which used gatk mutect2 in mitochondrial mode
 rule variant_calling_1:
     input:
@@ -211,6 +212,7 @@ rule bgzip_3:
         '''
         bgzip -i {input.vcf}
         '''
+
 # Index vcf output
 rule tabix_3:
     input:
@@ -224,6 +226,7 @@ rule tabix_3:
         '''         
         tabix -p vcf {input.vcf_gz}
         '''
+        
 # Split multuallelic sites
 rule split_multiallele_2:
     input:

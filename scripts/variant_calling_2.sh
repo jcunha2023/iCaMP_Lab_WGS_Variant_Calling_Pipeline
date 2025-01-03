@@ -16,7 +16,7 @@ SAMPLE_ID="${SAMPLE_ID_TEMP%_consensus_ref.fa}"
 FQ_INPUT=$2
 SAM_OUTPUT="../sam_files_consensus/${SAMPLE_ID}_consensus.sam"
 SAM_OUTPUT_MARKED_DUPS="../sam_files_consensus/${SAMPLE_ID}_consensus_duplicates_marked.sam"
-DUPLICATE_STATS="../marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_consensus.txt"
+DUPLICATE_STATS="../marked_duplicate_stats/${SAMPLE_ID}_duplicate_stats_consensus.txt"
 
 temp_dir="../tmp/"
 vcf_dir="../vcf_files_consensus/"
@@ -31,16 +31,9 @@ samtools faidx ${CONSENSUS_REFERENCE}
 ## name this reference
 bwa index ${CONSENSUS_REFERENCE} -p ${CONSENSUS_INDEX}
 
-# just save the fq file already converted
-# ## transform all bam files into fastq format
-# for i in ./*.bam; 
-#     do samtools bam2fq $i > ${i%.bam}.fq; 
-# done
-
-
 ## using BWA mem to align WGS reads to our consensus reference
 bwa mem ${CONSENSUS_INDEX} ${FQ_INPUT} -K 100000000 -p -v 3 -Y | samtools sort -o ${SAM_OUTPUT}
-#rm ${FQ_INPUT}
+rm ${FQ_INPUT}
 
 ## mark duplicates
 gatk MarkDuplicates -I ${SAM_OUTPUT} -O ${SAM_OUTPUT_MARKED_DUPS} -M ${DUPLICATE_STATS}
@@ -52,10 +45,13 @@ samtools sort ${temp_dir}${SAMPLE_ID}-addedReadGroup.bam -o ${temp_dir}${SAMPLE_
 samtools index -b ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam
 rm ${temp_dir}${SAMPLE_ID}-addedReadGroup.bam
 rm ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam
-#rm ${SAM_OUTPUT}
+rm ${SAM_OUTPUT}
+#rm ${SAM_OUTPUT_MARKED_DUPS}
 
 
 ## call the genetic variants
 gatk Mutect2 -R ${CONSENSUS_REFERENCE} -L chrM \
 --mitochondria-mode -I ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam \
 -O ${vcf_dir}${SAMPLE_ID}_variants_called_against_consensus.vcf --min-base-quality-score 30
+rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam
+rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam.bai
