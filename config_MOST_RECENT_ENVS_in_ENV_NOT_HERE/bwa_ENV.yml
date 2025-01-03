@@ -1,0 +1,16 @@
+name: bwa_ENV
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - bwa=0.7.18=he4a0461_1
+  - libgcc=14.1.0=h77fa898_1
+  - libgcc-ng=14.1.0=h69a702a_1
+  - libgomp=14.1.0=h77fa898_1
+  - libxcrypt=4.4.36=hd590300_1
+  - libzlib=1.3.1=h4ab18f5_1
+  - perl=5.32.1=7_hd590300_perl5
+prefix: /projectnb/icamp/nmf35/.conda/envs/bwa_ENV
