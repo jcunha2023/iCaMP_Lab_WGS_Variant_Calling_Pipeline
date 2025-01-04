@@ -74,7 +74,7 @@ rule variant_calling_1:
         vcf = "../vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
     params:
         reference = "../chrM_reference/chrMref.fa"
-    threads: 1
+    threads: 4
     conda: "../envs/samtools_gatk_ENV.yml"
     shell:
         '''
@@ -193,7 +193,7 @@ rule variant_calling_2:
         fq = "../fq_files/{SAMPLE_ID}.fq"
     output:
         vcf = "../vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    threads: 1
+    threads: 4
     conda: "../envs/samtools_gatk_bwa_ENV.yml"
     shell:
         '''
