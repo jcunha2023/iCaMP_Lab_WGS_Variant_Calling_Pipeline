@@ -38,4 +38,4 @@ dependencies:
   - perl=5.32.1=7_hd590300_perl5
   - xz=5.2.6=h166bdaf_0
   - zlib=1.2.13=h4ab18f5_6
-prefix: /projectnb/icamp/nmf35/.conda/envs/htslib_bcftools_ENV
+prefix: /.conda/envs/htslib_bcftools_ENV

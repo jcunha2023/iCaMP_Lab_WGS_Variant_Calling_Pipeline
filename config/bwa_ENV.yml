@@ -13,4 +13,4 @@ dependencies:
   - libxcrypt=4.4.36=hd590300_1
   - libzlib=1.3.1=h4ab18f5_1
   - perl=5.32.1=7_hd590300_perl5
-prefix: /projectnb/icamp/nmf35/.conda/envs/bwa_ENV
+prefix: /.conda/envs/bwa_ENV

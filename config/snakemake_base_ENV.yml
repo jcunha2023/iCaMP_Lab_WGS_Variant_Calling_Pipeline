@@ -134,4 +134,4 @@ dependencies:
   - zstd=1.5.6=ha6fb4c9_0
   - pip:
       - snakemake-executor-plugin-cluster-generic==1.0.9
-prefix: /projectnb/icamp/nmf35/.conda/envs/snakemake_env
+prefix: /.conda/envs/snakemake_env
