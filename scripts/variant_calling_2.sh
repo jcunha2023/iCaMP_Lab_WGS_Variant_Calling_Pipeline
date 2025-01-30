@@ -40,7 +40,7 @@ bwa index ${CONSENSUS_REFERENCE} -p ${CONSENSUS_INDEX}
 bwa mem ${CONSENSUS_INDEX} ${FQ_INPUT} -K 100000000 -p -v 3 -Y > ${SAM_OUTPUT}
 #rm ${FQ_INPUT}
 
-## preparing alignmed reads for variant calling
+## preparing aligned reads for variant calling
 gatk AddOrReplaceReadGroups -I ${SAM_OUTPUT} -O ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam -LB Pond -PL ILLUMINA -PU 0 -SM ${SAMPLE_ID}
 samtools view -C -T ${CONSENSUS_REFERENCE} -o ${temp_dir}${SAMPLE_ID}-addedReadGroup.bam ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam
 samtools sort ${temp_dir}${SAMPLE_ID}-addedReadGroup.bam -o ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam

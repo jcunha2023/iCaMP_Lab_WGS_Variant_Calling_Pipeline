@@ -2,8 +2,6 @@
 ##########This is a pipeline to call variants from WGS data developed by Ariel Xu#################
 ####################################################################################################
 
-#INPUT_ID=["bb"]
-
 #Libraries
 import pandas as pd 
 
@@ -86,6 +84,7 @@ rule bgzip_1:
     output:
         vcf_gz = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
     #threads: 1
+    conda: f"{CONFIG_DIR}/htslib_ENV.yml"
     shell:
         '''
         bgzip -i {input.vcf}
@@ -147,6 +146,7 @@ rule bgzip_2:
     output:
         vcf_filtered_vaf_50_gz = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz"
     #threads: 1
+    conda: f"{CONFIG_DIR}/htslib_ENV.yml"
     shell:
         '''
         bgzip -i {input.vcf_filtered_vaf_50}
@@ -237,14 +237,3 @@ rule split_multiallele_2:
         --split-multi-allelics \
         --keep-original-ac
         '''     
-
-# rule bgzip_1:
-#     input:
-#         vcf = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
-#     output:
-#         vcf_gz = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
-#     #threads: 1
-#     shell:
-#         '''
-#         bgzip -i {input.vcf}
-#         ''' 
