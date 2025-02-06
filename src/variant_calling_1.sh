@@ -8,7 +8,7 @@ vcf_dir="../vcf_files_rCRS/"
 
 # get sample id
 SAMPLE_ID_TEMP="${INPUT_SAM##*/}"
-SAMPLE_ID="${SAMPLE_ID_TEMP%.*}"
+SAMPLE_ID="${SAMPLE_ID_TEMP%%_*}"
 
 # preparing alignmed reads for variant calling
 gatk AddOrReplaceReadGroups -I $INPUT_SAM -O ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam -LB Pond -PL ILLUMINA -PU 0 -SM ${SAMPLE_ID}
