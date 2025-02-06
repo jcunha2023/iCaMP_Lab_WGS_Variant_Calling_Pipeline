@@ -38,7 +38,7 @@ rule bam_2_fq:
     output:
         temp_bam = temp(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.bam"),
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
@@ -57,7 +57,7 @@ rule bwa:
         sam = OUTPUT_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
     shell:
         '''
@@ -72,9 +72,10 @@ rule mark_duplicates_1:
         marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_rCRS.txt"
     params:
     threads: 1
-    conda:
+    conda: "../config/samtools_gatk_ENV.yml"
     shell:
         '''
+        gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
         '''
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 rule variant_calling_1:
@@ -84,7 +85,7 @@ rule variant_calling_1:
         vcf = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
-    #threads: 16
+    threads: 16
     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
@@ -96,7 +97,7 @@ rule bgzip_1:
         vcf = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
     output:
         vcf_gz = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/htslib_ENV.yml"
     shell:
         '''
@@ -110,7 +111,7 @@ rule tabix_1:
     output:
         vcf_gz_tbi = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"
     params:
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''         
@@ -126,7 +127,7 @@ rule split_multiallele_1:
         vcf_splitted = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted.vcf"
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
@@ -158,7 +159,7 @@ rule bgzip_2:
         vcf_filtered_vaf_50 = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf"
     output:
         vcf_filtered_vaf_50_gz = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/htslib_ENV.yml"
     shell:
         '''
@@ -172,7 +173,7 @@ rule tabix_2:
     output:
         vcf_filtered_vaf_50_gz_tbi = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz.tbi"
     params:
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''         
@@ -188,7 +189,7 @@ rule make_consensus_reference:
         consensus_ref = OUTPUT_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
     params: 
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
     shell:
         '''
@@ -200,7 +201,8 @@ rule variant_calling_2:
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     output:
         vcf = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    conda: f"{CONFIG_DIR}/variant_calling_2_ENV.yml"
+    thread: 4
+    conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
     shell:
         '''
         ./variant_calling_2.sh {input.consensus_ref} {input.fq} 
@@ -211,7 +213,7 @@ rule bgzip_3:
         vcf = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
     output:
         vcf_gz = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/htslib_ENV.yml"
     shell:
         '''
@@ -224,7 +226,7 @@ rule tabix_3:
     output:
         vcf_gz_tbi = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
     params:
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''         
@@ -239,7 +241,7 @@ rule split_multiallele_2:
         vcf_splitted = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf"
     params:
         reference = OUTPUT_DIR + "/consensus_reference_sequences/{SAMPLE_ID}_consensus_ref.fa"
-    #threads: 1
+    threads: 1
     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
