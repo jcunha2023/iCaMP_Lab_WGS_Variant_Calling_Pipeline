@@ -1,0 +1,6 @@
+name: htslib_ENV
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+prefix: /projectnb/icamp/nmf35/.conda/envs/htslib_ENV

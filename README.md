@@ -1,7 +1,9 @@
+# mtDNA_variant_calling_pipeline
+
 Nathaniel Fisher
 September 2024
 
-WGS Variant Calling Pipeline, Version 2
+WGS Variant Calling Pipeline, Version 1
 
 This is a pipeline to call mitochondrial variants from WGS data initially developed by Ariel Xu.
 

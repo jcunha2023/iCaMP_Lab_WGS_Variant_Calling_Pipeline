@@ -1,10 +1,10 @@
 #!/bin/bash
 
 ## load modules
-module load samtools
-module load bwa
-module load miniconda/4.9.2
-module load gatk/4.2.1.0
+#module load samtools
+#module load bwa
+#module load miniconda/4.9.2
+#module load gatk/4.2.1.0
 
 CONSENSUS_REFERENCE=$1
 CONSENSUS_INDEX=${CONSENSUS_REFERENCE%_consensus_ref.fa}-consensus
@@ -15,6 +15,8 @@ SAMPLE_ID="${SAMPLE_ID_TEMP%_consensus_ref.fa}"
 
 FQ_INPUT=$2
 SAM_OUTPUT="../sam_files_consensus/${SAMPLE_ID}_consensus.sam"
+SAM_OUTPUT_MARKED_DUPS="../sam_files_consensus/${SAMPLE_ID}_consensus_duplicates_marked.sam"
+DUPLICATE_STATS="../marked_duplicate_stats/${SAMPLE_ID}_duplicate_stats_consensus.txt"
 
 temp_dir="../tmp/"
 vcf_dir="../vcf_files_consensus/"
@@ -30,22 +32,26 @@ samtools faidx ${CONSENSUS_REFERENCE}
 bwa index ${CONSENSUS_REFERENCE} -p ${CONSENSUS_INDEX}
 
 ## using BWA mem to align WGS reads to our consensus reference
-bwa mem ${CONSENSUS_INDEX} ${FQ_INPUT} -K 100000000 -p -v 3 -Y > ${SAM_OUTPUT}
-#rm ${FQ_INPUT}
+bwa mem ${CONSENSUS_INDEX} ${FQ_INPUT} -K 100000000 -p -v 3 -Y | samtools sort -o ${SAM_OUTPUT}
+rm ${FQ_INPUT}
+
+## mark duplicates
+gatk MarkDuplicates -I ${SAM_OUTPUT} -O ${SAM_OUTPUT_MARKED_DUPS} -M ${DUPLICATE_STATS}
 
 ## preparing alignmed reads for variant calling
-gatk AddOrReplaceReadGroups -I ${SAM_OUTPUT} -O ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam -LB Pond -PL ILLUMINA -PU 0 -SM ${SAMPLE_ID}
+gatk AddOrReplaceReadGroups -I ${SAM_OUTPUT_MARKED_DUPS} -O ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam -LB Pond -PL ILLUMINA -PU 0 -SM ${SAMPLE_ID}
 samtools view -C -T ${CONSENSUS_REFERENCE} -o ${temp_dir}${SAMPLE_ID}-addedReadGroup.bam ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam
 samtools sort ${temp_dir}${SAMPLE_ID}-addedReadGroup.bam -o ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam
 samtools index -b ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam
 rm ${temp_dir}${SAMPLE_ID}-addedReadGroup.bam
 rm ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam
-#rm ${SAM_OUTPUT}
+rm ${SAM_OUTPUT}
+#rm ${SAM_OUTPUT_MARKED_DUPS}
 
 
 ## call the genetic variants
 gatk Mutect2 -R ${CONSENSUS_REFERENCE} -L chrM \
 --mitochondria-mode -I ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam \
 -O ${vcf_dir}${SAMPLE_ID}_variants_called_against_consensus.vcf --min-base-quality-score 30
-#rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam
-#rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam.bai
+rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam
+rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam.bai
