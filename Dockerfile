@@ -7,7 +7,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 #Define paths and directories 
 
 ENV HOME_DIR=/mtDNA_variant_call_pipeline
-ENV SCRIPTS_DIR=/mtDNA_variant_call_pipeline/scripts/
+ENV SCRIPTS_DIR=/mtDNA_variant_call_pipeline/src/
 ENV BIN_DIR=/mtDNA_variant_call_pipeline/bin/
 ENV INPUT_DIR=/mtDNA_variant_call_pipeline/input_bams/
 ENV CONFIG_DIR=/mtDNA_variant_call_pipeline/config
@@ -29,7 +29,7 @@ COPY chrM_reference/ $HOME_DIR/chrM_reference
 
 #Copy snakemake pipeline and scripts directory into image
 COPY Snakefile $HOME_DIR/Snakefile
-COPY scripts/ $SCRIPTS_DIR
+COPY src/ $SCRIPTS_DIR
 
 # Create base snakemake environment
 RUN conda env remove -n snakemake_env || true && \

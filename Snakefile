@@ -43,10 +43,10 @@ rule bam_2_fq:
     shell:
         '''
         if [[ "{FILE_EXT}" == "bam" ]]; then
-            samtools bam2fq {input.read_file} > {output.fq}
+            samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
         elif [[ "{FILE_EXT}" == "cram" ]]; then
             samtools view -b -T {input.ref_seq} -o {output.temp_bam} {input.read_file} && \
-            samtools bam2fq {output.temp_bam} > {output.fq}
+            samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
         fi
         '''    
 # align fq files to rCRS using bwa mem
@@ -58,15 +58,28 @@ rule bwa:
     params:
         reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
     #threads: 1
-    conda: f"{CONFIG_DIR}/bwa_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
     shell:
         '''
-        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y > {output.sam}
+        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y | samtools sort -o > {output.sam}
+        '''
+# mark duplicate reads
+rule mark_duplicates_1:
+    input:
+        sam = OUTPUT_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
+    output:
+        sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam",
+        marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_rCRS.txt"
+    params:
+    threads: 1
+    conda:
+    shell:
+        '''
         '''
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 rule variant_calling_1:
     input:
-        sam = OUTPUT_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
+        sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam"
     output:
         vcf = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
     params:
