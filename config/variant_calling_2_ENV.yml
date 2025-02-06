@@ -32,4 +32,4 @@ dependencies:
   - samtools=1.20=h50ea8bc_1
   - xz=5.2.6=h166bdaf_0
   - zstd=1.5.6=ha6fb4c9_0
-prefix: /projectnb/icamp/nmf35/.conda/envs/variant_calling_2_ENV
+prefix: /.conda/envs/variant_calling_2_ENV

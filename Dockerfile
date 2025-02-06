@@ -1,15 +1,16 @@
 #Base image 
-FROM ubuntu:23.04
+FROM condaforge/mambaforge:latest
 
 #Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive 
 
 #Define paths and directories 
 
-ENV HOME_DIR=/mtDNA_variant_call_pipeline/
-ENV SCRIPTS_DIR=/mtDNA_variant_call_pipeline/scripts/
+ENV HOME_DIR=/mtDNA_variant_call_pipeline
+ENV SCRIPTS_DIR=/mtDNA_variant_call_pipeline/src/
 ENV BIN_DIR=/mtDNA_variant_call_pipeline/bin/
 ENV INPUT_DIR=/mtDNA_variant_call_pipeline/input_bams/
+ENV CONFIG_DIR=/mtDNA_variant_call_pipeline/config
 ENV rCRS_OUTPUT_DIR=/mtDNA_variant_call_pipeline/vcf_files_rCRS/
 ENV CONSENSUS_OUTPUT_DIR=/mtDNA_variant_call_pipeline/vcf_files_consensus/
 
@@ -17,30 +18,44 @@ ENV PATH="$SCRIPTS_DIR:$BIN_DIR:$PATH"
 
 #Update and install necessary packages
 RUN apt-get -y update && \
-    apt-get install -y wget tar nano curl git bzip2 && \
+    apt-get install -y bash wget tar nano curl git bzip2 && \
     git --version 
 
-#Install Miniconda
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O /tmp/miniconda.sh 
-RUN bash /tmp/miniconda.sh -b -p /opt/conda && \
-    rm /tmp/miniconda.sh && \
-    echo "export PATH=/opt/conda/bin:$PATH" > /etc/profile.d/conda.sh
-#Add conda to PATH variable
-ENV PATH="/opt/conda/bin:$PATH"
+#Copy config directory and environment yml files into image
+COPY config/ $CONFIG_DIR
 
-#Create snakemake environment and install snakemake and snakemake wrapper utilities
-RUN conda create -n snakemake_env python=3.8 -y && \
-    /opt/conda/bin/conda install -n snakemake_env -c conda-forge -c bioconda -c defaults snakemake && \
-    /opt/conda/bin/pip install snakemake-wrapper-utils
+#Copy directory with chrM reference into image
+COPY chrM_reference/ $HOME_DIR/chrM_reference
 
-#Copy snakemake pipeline, yml files, and scripts into container
-COPY variant_calling_pipeline.snake $HOME_DIR/variant_calling_pipeline.snake
-COPY scripts/ $SCRIPTS_DIR
-COPY config/ $HOME_DIR/config
+#Copy snakemake pipeline and scripts directory into image
+#COPY src/Snakefile $HOME_DIR/src/Snakefile
+COPY src/ $SCRIPTS_DIR
+
+# Create base snakemake environment
+RUN conda env remove -n snakemake_env || true && \
+    mamba env create -f $CONFIG_DIR/snakemake_base_ENV.yml && \
+    mamba clean --all -y
+
+
+RUN echo "conda run -n snakemake_env" >> ~/.bashrc
+ENV PATH /opt/conda/envs/snakemake_env/bin:$PATH
 
 #Set working directory
 WORKDIR $HOME_DIR
 
-#Define entry point for the container
-ENTRYPOINT ["/opt/conda/envs/snakemake_env/bin/snakemake", "--snakefile", "variant_calling_pipeline.snake", "--use-conda"]
+#old script below. uncomment to revert.
 
+
+# #Copy snakemake pipeline and scripts directory into image
+# COPY Snakefile $HOME_DIR/Snakefile
+# COPY scripts/ $SCRIPTS_DIR
+
+# #Set working directory
+# WORKDIR $HOME_DIR
+
+# #Make RUN commands use the new environment:
+# #SHELL ["conda", "run", "-n", "snakemake_base", "/bin/bash", "-c"]
+
+# #Define entry point for the container and command to activate the base environment
+
+# # ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "snakemake_base"]
