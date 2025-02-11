@@ -3,8 +3,11 @@
 
 INPUT_SAM=$1
 REFERENCE=$2
-temp_dir="../tmp/"
-vcf_dir="../vcf_files_rCRS/"
+INTERVAL=$3
+WORKDIR=$4
+
+temp_dir=${WORKDIR}/tmp/
+vcf_dir=${WORKDIR}/vcf_files_rCRS/
 
 # get sample id
 SAMPLE_ID_TEMP="${INPUT_SAM##*/}"
@@ -20,7 +23,7 @@ rm ${temp_dir}${SAMPLE_ID}-addedReadGroup.sam
 rm $INPUT_SAM
 
 # # variant calling round 1
-gatk Mutect2 -R $REFERENCE -L chrM --mitochondria-mode -I ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam \
+gatk Mutect2 -R $REFERENCE -L $INTERVAL --mitochondria-mode -I ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam \
 -O ${vcf_dir}${SAMPLE_ID}_variants_called_against_rCRS.vcf --min-base-quality-score 30
 rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam
 rm ${temp_dir}${SAMPLE_ID}-addedReadGroup-sorted.bam.bai
