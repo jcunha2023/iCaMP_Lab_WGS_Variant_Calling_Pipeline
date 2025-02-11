@@ -21,6 +21,9 @@ RUN apt-get -y update && \
     apt-get install -y bash wget tar nano curl git bzip2 && \
     git --version 
 
+# Configure conda timeout and mirror settings
+RUN echo "channels:\n  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/conda-forge/\n  - bioconda\n  - defaults\nssl_verify: true\ntimeout: 120" > /opt/conda/.condarc
+
 #Copy config directory and environment yml files into image
 COPY config/ $CONFIG_DIR
 
@@ -35,7 +38,10 @@ RUN conda env remove -n snakemake_env || true && \
     mamba env create -f $CONFIG_DIR/snakemake_base_ENV.yml && \
     mamba clean --all -y
 
+# Add mamba to conda environment
+RUN conda install mamba -c conda-forge
 
+# Activate environment upon container startup
 RUN echo "conda run -n snakemake_env" >> ~/.bashrc
 ENV PATH /opt/conda/envs/snakemake_env/bin:$PATH
 
