@@ -34,8 +34,8 @@ rule all:
 rule bam_2_fq:
     input:
         read_file = lambda wildcards: 
-            wildcards.SAMPLE_ID if config.get("aou_mode", False) 
-            else f"{config['input_dir']}/{wildcards.SAMPLE_ID}.{FILE_EXT}"
+            INPUT_FILE_DIR if config.get("aou_mode", False) 
+            else f"{INPUT_FILE_DIR}/{wildcards.SAMPLE_ID}.{FILE_EXT}"
         ref_seq = WORKING_DIR + "/chrM_reference"
     output:
         temp_bam = temp(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.bam"),
