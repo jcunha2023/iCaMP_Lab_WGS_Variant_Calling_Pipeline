@@ -28,7 +28,6 @@ COPY config/ $CONFIG_DIR
 COPY chrM_reference/ $HOME_DIR/chrM_reference
 
 #Copy snakemake pipeline and scripts directory into image
-#COPY src/Snakefile $HOME_DIR/src/Snakefile
 COPY src/ $SCRIPTS_DIR
 
 # Create base snakemake environment
