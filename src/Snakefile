@@ -70,7 +70,6 @@ rule mark_duplicates_1:
     output:
         sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam",
         marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_rCRS.txt"
-    params:
     threads: 1
     conda: "../config/samtools_gatk_ENV.yml"
     shell:
@@ -172,7 +171,6 @@ rule tabix_2:
         vcf_filtered_vaf_50_gz = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz"
     output:
         vcf_filtered_vaf_50_gz_tbi = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered.vcf.gz.tbi"
-    params:
     threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
@@ -201,7 +199,7 @@ rule variant_calling_2:
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     output:
         vcf = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf"
-    thread: 4
+    threads: 4
     conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
     shell:
         '''
@@ -225,7 +223,6 @@ rule tabix_3:
         vcf_gz = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz"
     output:
         vcf_gz_tbi = OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus.vcf.gz.tbi"
-    params:
     threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
