@@ -16,3 +16,7 @@ chrM_refseq: /mtDNA_variant_call_pipeline/chrM_reference/chrMref.fa
 #Select whether the input read files are in .bam or .cram format
 read_format: "cram"  #include either "cram" or "bam" in quotes
 
+#True/False parameter to handle input file requirements on All of Us' Researcher Workbench
+#Default = False
+aou_mode: False
+
