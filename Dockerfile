@@ -16,13 +16,16 @@ ENV CONSENSUS_OUTPUT_DIR=/mtDNA_variant_call_pipeline/vcf_files_consensus/
 
 ENV PATH="$SCRIPTS_DIR:$BIN_DIR:$PATH"
 
+
+
 #Update and install necessary packages
 RUN apt-get -y update && \
     apt-get install -y bash wget tar nano curl git bzip2 && \
     git --version 
 
-# Configure conda timeout and mirror settings
-RUN echo "channels:\n  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/conda-forge/\n  - bioconda\n  - defaults\nssl_verify: true\ntimeout: 120" > /opt/conda/.condarc
+# Set retry and timeout configurations for Conda
+RUN echo "retry_attempts: 5" >> ~/.condarc && \
+echo "timeout: 60" >> ~/.condarc
 
 #Copy config directory and environment yml files into image
 COPY config/ $CONFIG_DIR
@@ -35,11 +38,8 @@ COPY src/ $SCRIPTS_DIR
 
 # Create base snakemake environment
 RUN conda env remove -n snakemake_env || true && \
-    mamba env create -f $CONFIG_DIR/snakemake_base_ENV.yml && \
-    mamba clean --all -y
-
-# Add mamba to conda environment
-RUN conda install mamba -c conda-forge
+    conda env create -f $CONFIG_DIR/snakemake_base_ENV.yml && \
+    conda clean --all -y
 
 # Activate environment upon container startup
 RUN echo "conda run -n snakemake_env" >> ~/.bashrc
