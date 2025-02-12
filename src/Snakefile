@@ -42,7 +42,6 @@ rule bam_2_fq:
         read_file = lambda wildcards: f"{INPUT_FILE_DIR}/{wildcards.SAMPLE_ID}.{FILE_EXT}" if not config.get("aou_mode", False) else INPUT_FILE_DIR,        
         ref_seq = REF_DIR + "/chrMref.fa"
     output:
-        temp_bam = temp(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.bam"),
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
     threads: 1
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
@@ -53,8 +52,8 @@ rule bam_2_fq:
         if [ {params.FILE_EXT} == "bam" ]; then
             samtools sort -n {input.read_file} | samtools bam2fq > {output.fq}
         elif [ {params.FILE_EXT} == "cram" ]; then
-            samtools view -b -T {input.ref_seq} -o {output.temp_bam} {input.read_file} && \
-            samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
+            samtools view -b -T {input.ref_seq} -o {input.read_file} | \
+            samtools sort -n | samtools bam2fq > {output.fq}
         fi
         '''  
 
