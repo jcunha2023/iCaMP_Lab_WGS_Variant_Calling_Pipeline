@@ -141,18 +141,70 @@ rule circ_bwa:
         bwa mem {params.circ_reference} {input.fq} -K 100000000 -p -v 3 -Y | samtools sort -o > {output.circ_sam}
         '''
 
-# mark duplicate reads
-rule mark_duplicates_1:
+# mark duplicate reads for linear rCRS-aligned reads
+rule mark_duplicates_1a:
+    priority:8
     input:
-        sam = OUTPUT_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam"
+        sam = OUTPUT_DIR + "/sam_files_rCRS/linear/{SAMPLE_ID}.sam"
     output:
         sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam",
         marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_rCRS.txt"
     threads: 1
-    conda: "../config/samtools_gatk_ENV.yml"
+    conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
     shell:
         '''
         gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
+        '''
+
+# mark duplicate reads for circular rCRS-aligned reads
+rule mark_duplicates_1b:
+    priority:9
+    input:
+        sam = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam"
+    output:
+        sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked_circ.sam",
+        marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_circ_rCRS.txt"
+    threads: 1
+    conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
+        '''
+
+# step to adjust alignment positions in circular alignments that exceed the reference length (offset = 0)
+# circSam.pl borrowed from the mitohpc pipeline (https://github.com/dpuiu/MitoHPC)
+rule adjust_circ_sam_pos_0:
+    input:
+        sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
+        ref_idx = {WORKING_DIR}/chrM_reference/chrMref300.fa.fai
+    output:
+        sam_adjust_0 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam"
+    threads: 1
+    conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+    params: 
+        offset = 0
+    shell:
+        '''
+        cat {input.sam} | \ 
+        circSam.pl -ref_len {input.ref_id} -offset {params.offset} > {output.sam_adjust_0}
+        '''
+
+# step to adjust alignment positions in circular alignments that exceed the reference length (offset = 300)
+# circSam.pl borrowed from the mitohpc pipeline (https://github.com/dpuiu/MitoHPC)
+rule adjust_circ_sam_pos_300:
+    input:
+        sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
+        ref_idx = {WORKING_DIR}/chrM_reference/chrMref300.fa.fai
+    output:
+        sam_adjust_300 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_300.sam"
+    threads: 1
+    conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+    params: 
+        offset = 300
+    shell:
+        '''
+        cat {input.sam} | \ 
+        circSam.pl -ref_len {input.ref_id} -offset {params.offset} > {output.sam_adjust_300}
         '''
 
 # run variant calling script which used gatk mutect2 in mitochondrial mode
