@@ -16,6 +16,7 @@ OUTPUT_DIR = config["results_dir"]
 CONFIG_DIR = config["config_dir"]
 INPUT_FILE_DIR = config["input_dir"]
 FILE_EXT = config["read_format"]
+REF_DIR = config["reference_dir"]
 
 #Initialize INPUT_ID based on config
 if config["SAMPLE_ID"]:  #Use single sample if SAMPLE_ID is provided and non-empty
@@ -39,7 +40,7 @@ rule bam_2_fq:
         read_file = lambda wildcards: 
             INPUT_FILE_DIR if config.get("aou_mode", False) 
             else f"{INPUT_FILE_DIR}/{wildcards.SAMPLE_ID}.{FILE_EXT}",
-        ref_seq = WORKING_DIR + "/chrM_reference"
+        ref_seq = REF_DIR = "/"
     output:
         temp_bam = temp(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.bam"),
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
@@ -59,10 +60,10 @@ rule bam_2_fq:
 rule circ_rCRS: 
     priority:2
     input:
-        lin_rCRS= WORKING_DIR + "/chrM_reference/chrMref.fa",
-        lin_rCRS_idx= WORKING_DIR + "/chrM_reference/chrMref.fa.fai"
+        lin_rCRS= REF_DIR = "//chrMref.fa",
+        lin_rCRS_idx= REF_DIR = "//chrMref.fa.fai"
     output:
-        circ_rCRS= WORKING_DIR + "/chrM_reference/chrMref300.fa",
+        circ_rCRS= REF_DIR = "//chrMref300.fa",
     params:
         seq_header="chrM", #header in the fasta file
         ext_len=300, #length of sequence extension
@@ -77,9 +78,9 @@ rule circ_rCRS:
 rule circ_rCRS_dict: 
     priority:3
     input:
-        circ_rCRS= WORKING_DIR + "/chrM_reference/chrMref300.fa"
+        circ_rCRS= REF_DIR = "//chrMref300.fa"
     output:
-        circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
+        circ_rCRS_dict= REF_DIR = "//chrMref300.dict"
     params:
     conda: WORKING_DIR + "/config/samtools_ENV.yml"
     shell:
@@ -91,9 +92,9 @@ rule circ_rCRS_dict:
 rule circ_rCRS_samtools_idx:
     priority:4
     input:
-        circ_rCRS= WORKING_DIR + "/chrM_reference/chrMref300.fa"
+        circ_rCRS= REF_DIR = "//chrMref300.fa"
     output:
-        circ_rCRS_fai= WORKING_DIR + "/chrM_reference/chrMref300.fa.fai"
+        circ_rCRS_fai= REF_DIR = "//chrMref300.fa.fai"
     conda: WORKING_DIR + "/config/samtools_ENV.yml"
     shell:
         '''
@@ -104,15 +105,15 @@ rule circ_rCRS_samtools_idx:
 rule bwa:
     input:
         fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq",
-        amb = WORKING_DIR + "/chrM_reference/chrMref.fa.amb",
-        ann = WORKING_DIR + "/chrM_reference/chrMref.fa.ann",
-        bwt = WORKING_DIR + "/chrM_reference/chrMref.fa.bwt",
-        pac = WORKING_DIR + "/chrM_reference/chrMref.fa.pac",
-        sa = WORKING_DIR + "/chrM_reference/chrMref.fa.sa"
+        amb = REF_DIR = "//chrMref.fa.amb",
+        ann = REF_DIR = "//chrMref.fa.ann",
+        bwt = REF_DIR = "//chrMref.fa.bwt",
+        pac = REF_DIR = "//chrMref.fa.pac",
+        sa = REF_DIR = "//chrMref.fa.sa"
     output:
         sam = WORKING_DIR + "/sam_files_rCRS/linear/{SAMPLE_ID}.sam"
     params:
-        reference = WORKING_DIR + "/chrM_reference/chrMref.fa"
+        reference = REF_DIR = "//chrMref.fa"
     threads: 1
     conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
     shell:
@@ -125,15 +126,15 @@ rule circ_bwa:
     priority:7
     input:
         fq =  WORKING_DIR + "/fq_files/{SAMPLE_ID}.fq",
-        amb = WORKING_DIR + "/chrM_reference/chrMref300.fa.amb",
-        ann = WORKING_DIR + "/chrM_reference/chrMref300.fa.ann",
-        bwt = WORKING_DIR + "/chrM_reference/chrMref300.fa.bwt",
-        pac = WORKING_DIR + "/chrM_reference/chrMref300.fa.pac",
-        sa = WORKING_DIR + "/chrM_reference/chrMref300.fa.sa"
+        amb = REF_DIR = "//chrMref300.fa.amb",
+        ann = REF_DIR = "//chrMref300.fa.ann",
+        bwt = REF_DIR = "//chrMref300.fa.bwt",
+        pac = REF_DIR = "//chrMref300.fa.pac",
+        sa = REF_DIR = "//chrMref300.fa.sa"
     output:
         circ_sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam"
     params:
-        circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
+        circ_reference = REF_DIR = "//chrMref300.fa"
     threads: 1
     conda: WORKING_DIR + "/config/samtools_gatk_bwa_ENV.yml"
     shell:
@@ -177,7 +178,7 @@ rule adjust_circ_sam_pos_0:
     priority:10
     input:
         sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
-        ref_idx = {WORKING_DIR}/chrM_reference/chrMref300.fa.fai
+        ref_idx = {REF_DIR}/chrM_reference/chrMref300.fa.fai
     output:
         sam_adjust_0 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam"
     threads: 1
@@ -221,7 +222,7 @@ rule variant_calling_1a:
         stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.stats"        
     params:
         interval = "chrM", 
-        reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
+        reference = REF_DIR = "//chrMref.fa",
         working_dir = WORKING_DIR
     threads: 16
     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
@@ -237,14 +238,14 @@ rule variant_calling_1b:
     priority:13
     input:
         circ_sam = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam",
-        circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
+        circ_rCRS_dict= REF_DIR = "//chrMref300.dict"
     output:
         circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_variants_called_against_rCRS.vcf",
         circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.idx",
         circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.stats"
     params:
         interval = "chrM:285-315",
-        reference = WORKING_DIR + "/chrM_reference/chrMref300.fa",
+        reference = REF_DIR = "//chrMref300.fa",
         working_dir = WORKING_DIR
     threads: 16
     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
@@ -258,14 +259,14 @@ rule variant_calling_1c:
     priority:14
     input:
         circ_sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_300.sam",
-        circ_rCRS_dict= WORKING_DIR + "/chrM_reference/chrMref300.dict"
+        circ_rCRS_dict= REF_DIR = "//chrMref300.dict"
     output:
         circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf",
         circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.idx",
         circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.stats"
     params:
         interval = "chrM:285-315",
-        reference = WORKING_DIR + "/chrM_reference/chrMref300.fa",
+        reference = REF_DIR = "//chrMref300.fa",
         working_dir = WORKING_DIR
     threads: 16
     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
@@ -329,8 +330,8 @@ rule split_multiallele_1:
         circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_circ.vcf",
         circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_circ.vcf"
     params:
-        lin_reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
-        circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
+        lin_reference = REF_DIR = "//chrMref.fa",
+        circ_reference = REF_DIR = "//chrMref300.fa"
     threads: 1
     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
     shell:
@@ -441,8 +442,8 @@ rule normalize_vcf:
         circ_300_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz",
         circ_300_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz.tbi" 
     params:
-        lin_reference = WORKING_DIR + "/chrM_reference/chrMref.fa",
-        circ_reference = WORKING_DIR + "/chrM_reference/chrMref300.fa"
+        lin_reference = REF_DIR = "//chrMref.fa",
+        circ_reference = REF_DIR = "//chrMref300.fa"
     threads: 1
     conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
     shell:
