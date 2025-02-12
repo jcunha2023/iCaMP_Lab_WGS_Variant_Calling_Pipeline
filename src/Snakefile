@@ -178,7 +178,7 @@ rule adjust_circ_sam_pos_0:
     priority:10
     input:
         sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
-        ref_idx = {REF_DIR}/chrM_reference/chrMref300.fa.fai
+        ref_idx = REF_DIR + "/chrMref300.fa.fai"
     output:
         sam_adjust_0 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam"
     threads: 1
