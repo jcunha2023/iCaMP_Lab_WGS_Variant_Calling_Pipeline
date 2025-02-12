@@ -29,6 +29,8 @@ else:
 
 rule all:
     input:
+        expand(OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam", SAMPLE_ID = INPUT_ID),
+        expand(OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked_circ.sam", SAMPLE_ID = INPUT_ID)
         # expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz", SAMPLE_ID = INPUT_ID)
         # expand(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq", SAMPLE_ID = INPUT_ID)
         # expand(WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam", SAMPLE_ID = INPUT_ID),
