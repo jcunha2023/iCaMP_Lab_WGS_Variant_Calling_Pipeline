@@ -50,9 +50,9 @@ rule bam_2_fq:
         FILE_EXT = FILE_EXT
     shell:
         '''
-        if [ {params.FILE_EXT} == "bam" ]; then
+        if [ {config["read_format"]} == "bam" ]; then
             samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
-        elif [ {params.FILE_EXT} == "cram" ]; then
+        elif [ {config["read_format"]} == "cram" ]; then
             samtools view -b -T {input.ref_seq} -o {output.temp_bam} {input.read_file} && \
             samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
         fi
