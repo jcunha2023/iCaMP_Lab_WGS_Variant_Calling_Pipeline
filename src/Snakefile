@@ -75,7 +75,7 @@ rule circ_rCRS:
         seq_header="chrM", #header in the fasta file
         ext_len=300, #length of sequence extension
         fa_file_prefix= WORKING_DIR + "chrM_reference/chrMref" #prefix of fasta file
-    conda: WORKING_DIR + "/config/samtools_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
         # Circularize the reference
@@ -93,7 +93,7 @@ rule circ_rCRS_dict:
     output:
         circ_rCRS_dict= REF_DIR + "/chrMref300.dict"
     params:
-    conda: WORKING_DIR + "/config/samtools_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
          samtools dict {input.circ_rCRS} -o {output.circ_rCRS_dict}
@@ -106,7 +106,7 @@ rule circ_rCRS_samtools_idx:
         circ_rCRS= REF_DIR + "/chrMref300.fa"
     output:
         circ_rCRS_fai= REF_DIR + "/chrMref300.fa.fai"
-    conda: WORKING_DIR + "/config/samtools_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
         samtools faidx {input.circ_rCRS}
@@ -148,7 +148,7 @@ rule circ_bwa:
     params:
         circ_reference = REF_DIR + "/chrMref300.fa"
     threads: 1
-    conda: WORKING_DIR + "/config/samtools_gatk_bwa_ENV.yml"
+    conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
     shell:
         '''
         bwa mem {params.circ_reference} {input.fq} -K 100000000 -p -v 3 -Y | samtools sort -o > {output.circ_sam}
@@ -163,7 +163,7 @@ rule circ_bwa:
 #         sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam",
 #         marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_rCRS.txt"
 #     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     shell:
 #         '''
 #         gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
@@ -178,7 +178,7 @@ rule circ_bwa:
 #         sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked_circ.sam",
 #         marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_circ_rCRS.txt"
 #     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     shell:
 #         '''
 #         gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
@@ -194,7 +194,7 @@ rule circ_bwa:
 #     output:
 #         sam_adjust_0 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam"
 #     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     params: 
 #         offset = 0
 #     shell:
@@ -213,7 +213,7 @@ rule circ_bwa:
 #     output:
 #         sam_adjust_300 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_300.sam"
 #     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     params: 
 #         offset = 300
 #     shell:
@@ -237,7 +237,7 @@ rule circ_bwa:
 #         reference = REF_DIR + "/chrMref.fa",
 #         working_dir = WORKING_DIR
 #     threads: 16
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     shell:
 #         '''
 #         bash scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval} {params.working_dir}
@@ -260,7 +260,7 @@ rule circ_bwa:
 #         reference = REF_DIR + "/chrMref300.fa",
 #         working_dir = WORKING_DIR
 #     threads: 16
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     shell:
 #         '''
 #         bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
@@ -281,7 +281,7 @@ rule circ_bwa:
 #         reference = REF_DIR + "/chrMref300.fa",
 #         working_dir = WORKING_DIR
 #     threads: 16
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     shell:
 #         '''
 #         bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
@@ -319,7 +319,7 @@ rule circ_bwa:
 #         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"  
 #     params:
 #     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
 #     shell:
 #         '''         
 #         tabix -p vcf {input.lin_vcf_gz} && \
@@ -345,7 +345,7 @@ rule circ_bwa:
 #         lin_reference = REF_DIR + "/chrMref.fa",
 #         circ_reference = REF_DIR + "/chrMref300.fa"
 #     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_gatk_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
 #     shell:
 #         '''
 #         gatk LeftAlignAndTrimVariants \
@@ -431,7 +431,7 @@ rule circ_bwa:
 #         circ_0_vcf_filtered_vaf_sort_50_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf.tbi",
 #         circ_300_vcf_filtered_vaf_sort_50_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf.tbi" 
 #     threads: 1
-#     conda: WORKING_DIR + "/config/samtools_ENV.yml"
+#     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
 #     shell:
 #         '''         
 #         tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
@@ -457,7 +457,7 @@ rule circ_bwa:
 #         lin_reference = REF_DIR + "/chrMref.fa",
 #         circ_reference = REF_DIR + "/chrMref300.fa"
 #     threads: 1
-#     conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
+#     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
 #     shell:
 #          '''
 #         bcftools norm -m-any -f {params.lin_reference} {input.lin_vcf_filtered_vaf_50_sort_gz} | bgzip > {output.lin_norm_vcf_gz} && \
@@ -482,7 +482,7 @@ rule circ_bwa:
 #     output:
 #         merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
 #     threads: 1
-#     conda: WORKING_DIR + "/config/htslib_bcftools_ENV.yml"
+#     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
 #     shell:
 #         '''
 #         bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_norm_vcf_gz} {input.circ_0_norm_vcf_gz} {circ_300_norm_vcf_gz}
