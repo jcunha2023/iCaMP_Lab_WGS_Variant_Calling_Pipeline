@@ -11,7 +11,7 @@ SAMPLE_ID: "" #Input Sample ID for pipeline
 units: /mtDNA_variant_call_pipeline/config/samples.txt #Provide local path to where the "units" file is stored containing sample IDs and input ids
 
 #Mitochondrial reference sequence directory
-chrM_refseq: /mtDNA_variant_call_pipeline/chrM_reference
+reference_dir: /mtDNA_variant_call_pipeline/chrM_reference
 
 #Select whether the input read files are in .bam or .cram format
 read_format: "cram"  #include either "cram" or "bam" in quotes
