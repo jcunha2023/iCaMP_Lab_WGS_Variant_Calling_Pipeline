@@ -68,7 +68,7 @@ rule circ_rCRS:
     params:
         seq_header="chrM", #header in the fasta file
         ext_len=300, #length of sequence extension
-        fa_file_prefix= WORKING_DIR + "chrM_reference/chrMref" #prefix of fasta file
+        fa_file_prefix= REF_DIR + "/chrMref" #prefix of fasta file
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
