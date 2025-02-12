@@ -323,7 +323,7 @@ rule split_multiallele_1:
         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
         circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
         circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
-        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"     
+        lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"     
     output:
         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
         circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_circ.vcf",
