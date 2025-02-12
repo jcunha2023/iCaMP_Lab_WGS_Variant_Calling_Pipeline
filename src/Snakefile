@@ -149,7 +149,7 @@ rule circ_bwa:
         pac = REF_DIR + "/chrMref300.fa.pac",
         sa = REF_DIR + "/chrMref300.fa.sa"
     output:
-        temp_circ_sam = temp(WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_unsorted_circ.sam"),
+        temp_circ_sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_unsorted_circ.sam",
         circ_sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam"
     params:
         circ_reference = REF_DIR + "/chrMref300.fa"
@@ -158,7 +158,8 @@ rule circ_bwa:
     shell:
         '''
         bwa mem {params.circ_reference} {input.fq} -K 100000000 -p -v 3 -Y {output.temp_circ_sam} && \
-        samtools sort {output.temp_circ_sam} -o {output.circ_sam}
+        samtools sort {output.temp_circ_sam} -o {output.circ_sam} && \
+        rm -f {output.temp_circ_sam}
         '''
 
 # # mark duplicate reads for linear rCRS-aligned reads
