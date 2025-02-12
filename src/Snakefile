@@ -23,8 +23,8 @@ if config["SAMPLE_ID"]:  #Use single sample if SAMPLE_ID is provided and non-emp
     INPUT_ID = [config["SAMPLE_ID"]]
 else:
     #Parse `units` file to load all sample IDs if SAMPLE_ID is not specified
-    units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
-    INPUT_ID = units.index.get_level_values('sample').unique().tolist()
+    units = pd.read_csv(config["units"], dtype=str)
+    INPUT_ID = units["sample"].unique().tolist()
 
 
 rule all:
@@ -40,7 +40,6 @@ rule bam_2_fq:
         read_file = lambda wildcards: 
             INPUT_FILE_DIR if config.get("aou_mode", False) 
             else f"{INPUT_FILE_DIR}/{wildcards.SAMPLE_ID}.{FILE_EXT}",
-        ref_seq = REF_DIR = "/"
     output:
         temp_bam = temp(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.bam"),
         fq = OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq"
@@ -50,9 +49,9 @@ rule bam_2_fq:
         FILE_EXT = FILE_EXT
     shell:
         '''
-        if [ {config["read_format"]} == "bam" ]; then
+        if [ {params.FILE_EXT} == "bam" ]; then
             samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
-        elif [ {config["read_format"]} == "cram" ]; then
+        elif [ {params.FILE_EXT} == "cram" ]; then
             samtools view -b -T {input.ref_seq} -o {output.temp_bam} {input.read_file} && \
             samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
         fi
