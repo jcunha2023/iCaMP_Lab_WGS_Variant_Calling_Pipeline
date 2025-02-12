@@ -23,8 +23,8 @@ if config["SAMPLE_ID"]:  #Use single sample if SAMPLE_ID is provided and non-emp
     INPUT_ID = [config["SAMPLE_ID"]]
 else:
     #Parse `units` file to load all sample IDs if SAMPLE_ID is not specified
-    units = pd.read_csv(config["units"], dtype=str)
-    INPUT_ID = units["sample"].unique().tolist()
+    nits = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
+    INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
 
 rule all:
