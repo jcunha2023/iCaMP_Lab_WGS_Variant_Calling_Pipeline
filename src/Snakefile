@@ -37,6 +37,7 @@ rule all:
 # convert bam files (ideally NUMT filtered chrM reads (previously aligned to chrM with bwa))
 # to fq files
 rule bam_2_fq:
+    priority:1
     input:
         read_file = lambda wildcards: f"{INPUT_FILE_DIR}/{wildcards.SAMPLE_ID}.{FILE_EXT}" if not config.get("aou_mode", False) else INPUT_FILE_DIR,        
         ref_seq = REF_DIR + "/chrMref.fa"
@@ -65,6 +66,11 @@ rule circ_rCRS:
         lin_rCRS_idx= REF_DIR + "/chrMref.fa.fai"
     output:
         circ_rCRS= REF_DIR + "/chrMref300.fa",
+        circ_rCRS_ann= REF_DIR + "/chrMref300.fa.ann",
+        circ_rCRS_amb= REF_DIR + "/chrMref300.fa.amb",
+        circ_rCRS_pac= REF_DIR + "/chrMref300.fa.pac",
+        circ_rCRS_sa= REF_DIR + "/chrMref300.fa.sa",
+        circ_rCRS_bwt= REF_DIR + "/chrMref300.fa.bwt"
     params:
         seq_header="chrM", #header in the fasta file
         ext_len=300, #length of sequence extension
@@ -72,7 +78,11 @@ rule circ_rCRS:
     conda: WORKING_DIR + "/config/samtools_ENV.yml"
     shell:
         '''
-         samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" | perl -ane 'BEGIN {{ print ">{params.seq_header}\n" }}  chomp; print ; END {{ print "\n" }}'  > {output.circ_rCRS}
+        # Circularize the reference
+        samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" | perl -ane 'BEGIN {{ print ">{params.seq_header}\n" }}  chomp; print ; END {{ print "\n" }}' > {output.circ_rCRS}
+        
+        # Index the circularized reference (this generates the .ann, .amb, .pac, .sa, and .bwt files)
+        bwa index {output.circ_rCRS}        
         '''
 
 # Make a fasta dictionary file for the circularized rCRS sequence
