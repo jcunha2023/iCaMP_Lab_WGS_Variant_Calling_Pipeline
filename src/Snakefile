@@ -129,7 +129,7 @@ rule bwa:
     conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
     shell:
         '''
-        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y | samtools sort -o > {output.sam}
+        bwa mem {params.reference} {input.fq} -K 100000000 -p -v 3 -Y | samtools sort -o {output.sam}
         '''
 
 # align fq files to circularized rCRS using bwa mem
