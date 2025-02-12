@@ -159,338 +159,338 @@ rule circ_bwa:
         bwa mem {params.circ_reference} {input.fq} -K 100000000 -p -v 3 -Y | samtools sort -o {output.circ_sam}
         '''
 
-# # mark duplicate reads for linear rCRS-aligned reads
-# rule mark_duplicates_1a:
-#     priority:7
-#     input:
-#         sam = OUTPUT_DIR + "/sam_files_rCRS/linear/{SAMPLE_ID}.sam"
-#     output:
-#         sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam",
-#         marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_rCRS.txt"
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
-#         '''
+# mark duplicate reads for linear rCRS-aligned reads
+rule mark_duplicates_1a:
+    priority:7
+    input:
+        sam = OUTPUT_DIR + "/sam_files_rCRS/linear/{SAMPLE_ID}.sam"
+    output:
+        sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked.sam",
+        marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_rCRS.txt"
+    threads: 1
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
+        '''
 
-# # mark duplicate reads for circular rCRS-aligned reads
-# rule mark_duplicates_1b:
-#     priority:8
-#     input:
-#         sam = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam"
-#     output:
-#         sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked_circ.sam",
-#         marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_circ_rCRS.txt"
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
-#         '''
+# mark duplicate reads for circular rCRS-aligned reads
+rule mark_duplicates_1b:
+    priority:8
+    input:
+        sam = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam"
+    output:
+        sam_dups_marked = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicates_marked_circ.sam",
+        marked_dups_file = OUTPUT_DIR + "/marked_duplicate_stats/{SAMPLE_ID}_duplicate_stats_circ_rCRS.txt"
+    threads: 1
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        gatk MarkDuplicates -I {input.sam} -O {output.sam_dups_marked} -M {output.marked_dups_file}
+        '''
 
-# # step to adjust alignment positions in circular alignments that exceed the reference length (offset = 0)
-# # circSam.pl borrowed from the mitohpc pipeline (https://github.com/dpuiu/MitoHPC)
-# rule adjust_circ_sam_pos_0:
-#     priority:9
-#     input:
-#         sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
-#         ref_idx = REF_DIR + "/chrMref300.fa.fai"
-#     output:
-#         sam_adjust_0 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam"
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     params: 
-#         offset = 0
-#     shell:
-#         '''
-#         cat {input.sam} | \
-#         circSam.pl -ref_len {input.ref_id} -offset {params.offset} > {output.sam_adjust_0}
-#         '''
+# step to adjust alignment positions in circular alignments that exceed the reference length (offset = 0)
+# circSam.pl borrowed from the mitohpc pipeline (https://github.com/dpuiu/MitoHPC)
+rule adjust_circ_sam_pos_0:
+    priority:9
+    input:
+        sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
+        ref_idx = REF_DIR + "/chrMref300.fa.fai"
+    output:
+        sam_adjust_0 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam"
+    threads: 1
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    params: 
+        offset = 0
+    shell:
+        '''
+        cat {input.sam} | \
+        circSam.pl -ref_len {input.ref_id} -offset {params.offset} > {output.sam_adjust_0}
+        '''
 
-# # step to adjust alignment positions in circular alignments that exceed the reference length (offset = 300)
-# # circSam.pl borrowed from the mitohpc pipeline (https://github.com/dpuiu/MitoHPC)
-# rule adjust_circ_sam_pos_300:
-#     priority:10
-#     input:
-#         sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
-#         ref_idx = REF_DIR + "/chrMref300.fa.fai"
-#     output:
-#         sam_adjust_300 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_300.sam"
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     params: 
-#         offset = 300
-#     shell:
-#         '''
-#         cat {input.sam} | \
-#         circSam.pl -ref_len {input.ref_id} -offset {params.offset} > {output.sam_adjust_300}
-#         '''
+# step to adjust alignment positions in circular alignments that exceed the reference length (offset = 300)
+# circSam.pl borrowed from the mitohpc pipeline (https://github.com/dpuiu/MitoHPC)
+rule adjust_circ_sam_pos_300:
+    priority:10
+    input:
+        sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ.sam",
+        ref_idx = REF_DIR + "/chrMref300.fa.fai"
+    output:
+        sam_adjust_300 = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_300.sam"
+    threads: 1
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    params: 
+        offset = 300
+    shell:
+        '''
+        cat {input.sam} | \
+        circSam.pl -ref_len {input.ref_id} -offset {params.offset} > {output.sam_adjust_300}
+        '''
 
-# # run variant calling script which used gatk mutect2 in mitochondrial mode
-# # This step uses the linear version of the rCRS
-# rule variant_calling_1a:
-#     priority:11
-#     input:
-#         sam = WORKING_DIR + "/sam_files_rCRS/linear/{SAMPLE_ID}.sam"
-#     output:
-#         vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf",
-#         idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.idx",
-#         stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.stats"        
-#     params:
-#         interval = "chrM", 
-#         reference = REF_DIR + "/chrMref.fa",
-#         working_dir = WORKING_DIR
-#     threads: 16
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         bash scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval} {params.working_dir}
-#         '''
+# run variant calling script which used gatk mutect2 in mitochondrial mode
+# This step uses the linear version of the rCRS
+rule variant_calling_1a:
+    priority:11
+    input:
+        sam = WORKING_DIR + "/sam_files_rCRS/linear/{SAMPLE_ID}.sam"
+    output:
+        vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf",
+        idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.idx",
+        stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.stats"        
+    params:
+        interval = "chrM", 
+        reference = REF_DIR + "/chrMref.fa",
+        working_dir = WORKING_DIR
+    threads: 16
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        bash scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval} {params.working_dir}
+        '''
 
-# # run variant calling script which used gatk mutect2 in mitochondrial mode
-# # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315).
-# # The input sam was generated by `rule adjust_circ_sam_pos_0`
-# rule variant_calling_1b:
-#     priority:12
-#     input:
-#         circ_sam = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam",
-#         circ_rCRS_dict= REF_DIR + "/chrMref300.dict"
-#     output:
-#         circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_variants_called_against_rCRS.vcf",
-#         circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.idx",
-#         circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.stats"
-#     params:
-#         interval = "chrM:285-315",
-#         reference = REF_DIR + "/chrMref300.fa",
-#         working_dir = WORKING_DIR
-#     threads: 16
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
-#         '''
-# # run variant calling script which used gatk mutect2 in mitochondrial mode
-# # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
-# rule variant_calling_1c:
-#     priority:13
-#     input:
-#         circ_sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_300.sam",
-#         circ_rCRS_dict= REF_DIR + "/chrMref300.dict"
-#     output:
-#         circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf",
-#         circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.idx",
-#         circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.stats"
-#     params:
-#         interval = "chrM:285-315",
-#         reference = REF_DIR + "/chrMref300.fa",
-#         working_dir = WORKING_DIR
-#     threads: 16
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
-#         '''
+# run variant calling script which used gatk mutect2 in mitochondrial mode
+# This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315).
+# The input sam was generated by `rule adjust_circ_sam_pos_0`
+rule variant_calling_1b:
+    priority:12
+    input:
+        circ_sam = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam",
+        circ_rCRS_dict= REF_DIR + "/chrMref300.dict"
+    output:
+        circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_variants_called_against_rCRS.vcf",
+        circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.idx",
+        circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.stats"
+    params:
+        interval = "chrM:285-315",
+        reference = REF_DIR + "/chrMref300.fa",
+        working_dir = WORKING_DIR
+    threads: 16
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
+        '''
+# run variant calling script which used gatk mutect2 in mitochondrial mode
+# This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
+rule variant_calling_1c:
+    priority:13
+    input:
+        circ_sam = WORKING_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_300.sam",
+        circ_rCRS_dict= REF_DIR + "/chrMref300.dict"
+    output:
+        circ_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf",
+        circ_idx= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.idx",
+        circ_stats= WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.stats"
+    params:
+        interval = "chrM:285-315",
+        reference = REF_DIR + "/chrMref300.fa",
+        working_dir = WORKING_DIR
+    threads: 16
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
+        '''
 
-# # Sort and compress VCF file 
-# rule sort_vcf_1:
-#     priority: 14
-#     input: 
-#         circ_0_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf",
-#         circ_300_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf",
-#         lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
-#     output:
-#         circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
-#         circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
-#         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
-#     conda: "config/htslib_bcftools_ENV.yml"
-#     shell:
-#         '''
-#         bcftools sort -Oz -o {output.circ_0_vcf_gz} {input.circ_0_vcf} && \
-#         bcftools sort -Oz -o {output.circ_300_vcf_gz} {input.circ_300_vcf} && \
-#         bcftools sort -Oz -o {output.lin_vcf_gz} {input.lin_vcf}
-#         '''
+# Sort and compress VCF file 
+rule sort_vcf_1:
+    priority: 14
+    input: 
+        circ_0_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf",
+        circ_300_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf",
+        lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
+    output:
+        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
+        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
+    conda: "config/htslib_bcftools_ENV.yml"
+    shell:
+        '''
+        bcftools sort -Oz -o {output.circ_0_vcf_gz} {input.circ_0_vcf} && \
+        bcftools sort -Oz -o {output.circ_300_vcf_gz} {input.circ_300_vcf} && \
+        bcftools sort -Oz -o {output.lin_vcf_gz} {input.lin_vcf}
+        '''
 
-# # index vcf.qz file
-# rule tabix_1:
-#     priority:15
-#     input:
-#         circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
-#         circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
-#         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
-#     output:
-#         circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
-#         circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
-#         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"  
-#     params:
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
-#     shell:
-#         '''         
-#         tabix -p vcf {input.lin_vcf_gz} && \
-#         tabix -p vcf {input.circ_0_vcf_gz} && \
-#         tabix -p vcf {input.circ_300_vcf_gz} 
-#         '''
+# index vcf.qz file
+rule tabix_1:
+    priority:15
+    input:
+        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
+        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
+    output:
+        circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"  
+    params:
+    threads: 1
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
+    shell:
+        '''         
+        tabix -p vcf {input.lin_vcf_gz} && \
+        tabix -p vcf {input.circ_0_vcf_gz} && \
+        tabix -p vcf {input.circ_300_vcf_gz} 
+        '''
 
-# # split multiallelic variants
-# rule split_multiallele_1:
-#     priority:16
-#     input:
-#         circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
-#         circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
-#         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
-#         circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
-#         circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
-#         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"     
-#     output:
-#         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
-#         circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_circ.vcf",
-#         circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_circ.vcf"
-#     params:
-#         lin_reference = REF_DIR + "/chrMref.fa",
-#         circ_reference = REF_DIR + "/chrMref300.fa"
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
-#     shell:
-#         '''
-#         gatk LeftAlignAndTrimVariants \
-#         -R {params.lin_reference} \
-#         -V {input.lin_vcf_gz} \
-#         -O {output.lin_vcf_splitted} \
-#         --split-multi-allelics \
-#         --keep-original-ac && \
+# split multiallelic variants
+rule split_multiallele_1:
+    priority:16
+    input:
+        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
+        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
+        lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
+        circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"     
+    output:
+        lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
+        circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_circ.vcf",
+        circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_circ.vcf"
+    params:
+        lin_reference = REF_DIR + "/chrMref.fa",
+        circ_reference = REF_DIR + "/chrMref300.fa"
+    threads: 1
+    conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
+    shell:
+        '''
+        gatk LeftAlignAndTrimVariants \
+        -R {params.lin_reference} \
+        -V {input.lin_vcf_gz} \
+        -O {output.lin_vcf_splitted} \
+        --split-multi-allelics \
+        --keep-original-ac && \
 
-#         gatk LeftAlignAndTrimVariants \
-#         -R {params.circ_reference} \
-#         -V {input.circ_0_vcf_gz} \
-#         -O {output.circ_0_vcf_splitted} \
-#         --split-multi-allelics \
-#         --keep-original-ac && \
+        gatk LeftAlignAndTrimVariants \
+        -R {params.circ_reference} \
+        -V {input.circ_0_vcf_gz} \
+        -O {output.circ_0_vcf_splitted} \
+        --split-multi-allelics \
+        --keep-original-ac && \
 
-#         gatk LeftAlignAndTrimVariants \
-#         -R {params.circ_reference} \
-#         -V {input.circ_300_vcf_gz} \
-#         -O {output.circ_300_vcf_splitted} \
-#         --split-multi-allelics \
-#         --keep-original-ac
-#         '''
-
-
-# # filter for only variants with VAF > 50 (linear reference sequence)
-# rule filter_vcf_vaf_50_lin:
-#     priority:17
-#     input:
-#         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf"
-#     output:
-#         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
-#     params:
-#         SAMPLE_ID = lambda wildcards: wildcards.SAMPLE_ID
-#     shell:
-#         '''
-#         python3 scripts/filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.lin_vcf_filtered_vaf_50}
-#         '''
-# # filter for only variants with VAF > 50 (circular_reference_sequence)
-# rule filter_vcf_vaf_50_circ:
-#     priority: 18
-#     input:
-#         circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_circ.vcf",
-#         circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_circ.vcf"
-#     output:
-#         circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_circ.vcf",
-#         circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_circ.vcf"
-#     params:
-#         SAMPLE_ID = lambda wildcards: wildcards.SAMPLE_ID
-#     shell:
-#         '''
-#         python3 scripts/filter_VAF.py {input.circ_0_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_0_vcf_filtered_vaf_50} && \
-#         python3 scripts/filter_VAF.py {input.circ_300_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_300_vcf_filtered_vaf_50}
-#         '''
-
-# # Sort and index VCF files 
-# rule sort_vcf_2:
-#     priority:19
-#     input: 
-#         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
-#         circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_circ.vcf",
-#         circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_circ.vcf"
-#     output:
-#         lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
-#         circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf",
-#         circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf"   
-#     conda: "config/htslib_bcftools_ENV.yml"
-#     shell:
-#         '''
-#         bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {input.lin_vcf_filtered_vaf_50} && \
-#         bcftools sort -Oz -o {output.circ_0_vcf_filtered_vaf_50} {input.circ_0_vcf_filtered_vaf_50} && \
-#         bcftools sort -Oz -o {output.circ_300_vcf_filtered_vaf_50} {input.circ_300_vcf_filtered_vaf_50}
-#         '''
-# # index the filtered vaf > 50 vcf.gz files
-# rule tabix_2:
-#     priority:20
-#     input:
-#         lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
-#         circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf",
-#         circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf" 
-#     output:
-#         lin_vcf_filtered_vaf_50_sort_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz.tbi",
-#         circ_0_vcf_filtered_vaf_sort_50_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf.tbi",
-#         circ_300_vcf_filtered_vaf_sort_50_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf.tbi" 
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
-#     shell:
-#         '''         
-#         tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
-#         tabix -p vcf {input.circ_0_vcf_filtered_vaf_sort_50} && \
-#         tabix -p vcf {input.circ_300_vcf_filtered_vaf_sort_50}
-#         '''
-
-# # Left align the filtered variant calls, index them
-# rule normalize_vcf:
-#     priority:21
-#     input:
-#         lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
-#         circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf",
-#         circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf"     
-#     output:
-#         lin_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz",
-#         lin_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz.tbi",
-#         circ_0_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz",
-#         circ_0_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz.tbi",
-#         circ_300_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz",
-#         circ_300_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz.tbi" 
-#     params:
-#         lin_reference = REF_DIR + "/chrMref.fa",
-#         circ_reference = REF_DIR + "/chrMref300.fa"
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
-#     shell:
-#          '''
-#         bcftools norm -m-any -f {params.lin_reference} {input.lin_vcf_filtered_vaf_50_sort_gz} | bgzip > {output.lin_norm_vcf_gz} && \
-#         tabix -p vcf {output.lin_norm_vcf_gz} && \
-#         bcftools norm -m-any -f {params.circ_reference} {input.circ_0_vcf_filtered_vaf_sort_50} | bgzip > {output.circ_0_norm_vcf_gz} && \
-#         tabix -p vcf {output.circ_0_norm_vcf_gz} && \
-#         bcftools norm -m-any -f {params.circ_reference} {input.circ_300_vcf_filtered_vaf_sort_50} | bgzip > {output.circ_300_norm_vcf_gz} && \
-#         tabix -p vcf {output.circ_300_norm_vcf_gz}
-#         '''
+        gatk LeftAlignAndTrimVariants \
+        -R {params.circ_reference} \
+        -V {input.circ_300_vcf_gz} \
+        -O {output.circ_300_vcf_splitted} \
+        --split-multi-allelics \
+        --keep-original-ac
+        '''
 
 
-# # Merge the vcfs together
-# rule merge_vcf_1:
-#     priority: 22
-#     input:
-#         lin_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz",
-#         lin_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz.tbi",
-#         circ_0_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz",
-#         circ_0_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz.tbi",
-#         circ_300_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz",
-#         circ_300_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz.tbi" 
-#     output:
-#         merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
-#     threads: 1
-#     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
-#     shell:
-#         '''
-#         bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_norm_vcf_gz} {input.circ_0_norm_vcf_gz} {circ_300_norm_vcf_gz}
-#         '''
+# filter for only variants with VAF > 50 (linear reference sequence)
+rule filter_vcf_vaf_50_lin:
+    priority:17
+    input:
+        lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf"
+    output:
+        lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf"
+    params:
+        SAMPLE_ID = lambda wildcards: wildcards.SAMPLE_ID
+    shell:
+        '''
+        python3 scripts/filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.lin_vcf_filtered_vaf_50}
+        '''
+# filter for only variants with VAF > 50 (circular_reference_sequence)
+rule filter_vcf_vaf_50_circ:
+    priority: 18
+    input:
+        circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_circ.vcf",
+        circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_circ.vcf"
+    output:
+        circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_circ.vcf",
+        circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_circ.vcf"
+    params:
+        SAMPLE_ID = lambda wildcards: wildcards.SAMPLE_ID
+    shell:
+        '''
+        python3 scripts/filter_VAF.py {input.circ_0_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_0_vcf_filtered_vaf_50} && \
+        python3 scripts/filter_VAF.py {input.circ_300_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_300_vcf_filtered_vaf_50}
+        '''
+
+# Sort and index VCF files 
+rule sort_vcf_2:
+    priority:19
+    input: 
+        lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
+        circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_circ.vcf",
+        circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_circ.vcf"
+    output:
+        lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
+        circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf",
+        circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf"   
+    conda: "config/htslib_bcftools_ENV.yml"
+    shell:
+        '''
+        bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {input.lin_vcf_filtered_vaf_50} && \
+        bcftools sort -Oz -o {output.circ_0_vcf_filtered_vaf_50} {input.circ_0_vcf_filtered_vaf_50} && \
+        bcftools sort -Oz -o {output.circ_300_vcf_filtered_vaf_50} {input.circ_300_vcf_filtered_vaf_50}
+        '''
+# index the filtered vaf > 50 vcf.gz files
+rule tabix_2:
+    priority:20
+    input:
+        lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
+        circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf",
+        circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf" 
+    output:
+        lin_vcf_filtered_vaf_50_sort_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz.tbi",
+        circ_0_vcf_filtered_vaf_sort_50_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf.tbi",
+        circ_300_vcf_filtered_vaf_sort_50_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf.tbi" 
+    threads: 1
+    conda: f"{CONFIG_DIR}/samtools_ENV.yml"
+    shell:
+        '''         
+        tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
+        tabix -p vcf {input.circ_0_vcf_filtered_vaf_sort_50} && \
+        tabix -p vcf {input.circ_300_vcf_filtered_vaf_sort_50}
+        '''
+
+# Left align the filtered variant calls, index them
+rule normalize_vcf:
+    priority:21
+    input:
+        lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
+        circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered_sorted_circ.vcf",
+        circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered_sorted_circ.vcf"     
+    output:
+        lin_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz",
+        lin_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz.tbi",
+        circ_0_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz",
+        circ_0_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz.tbi",
+        circ_300_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz",
+        circ_300_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz.tbi" 
+    params:
+        lin_reference = REF_DIR + "/chrMref.fa",
+        circ_reference = REF_DIR + "/chrMref300.fa"
+    threads: 1
+    conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
+    shell:
+         '''
+        bcftools norm -m-any -f {params.lin_reference} {input.lin_vcf_filtered_vaf_50_sort_gz} | bgzip > {output.lin_norm_vcf_gz} && \
+        tabix -p vcf {output.lin_norm_vcf_gz} && \
+        bcftools norm -m-any -f {params.circ_reference} {input.circ_0_vcf_filtered_vaf_sort_50} | bgzip > {output.circ_0_norm_vcf_gz} && \
+        tabix -p vcf {output.circ_0_norm_vcf_gz} && \
+        bcftools norm -m-any -f {params.circ_reference} {input.circ_300_vcf_filtered_vaf_sort_50} | bgzip > {output.circ_300_norm_vcf_gz} && \
+        tabix -p vcf {output.circ_300_norm_vcf_gz}
+        '''
+
+
+# Merge the vcfs together
+rule merge_vcf_1:
+    priority: 22
+    input:
+        lin_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz",
+        lin_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.norm.vcf.gz.tbi",
+        circ_0_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz",
+        circ_0_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_splitted_filtered.norm.vcf.gz.tbi",
+        circ_300_norm_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz",
+        circ_300_norm_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_300_splitted_filtered.norm.vcf.gz.tbi" 
+    output:
+        merged_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz"
+    threads: 1
+    conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
+    shell:
+        '''
+        bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_norm_vcf_gz} {input.circ_0_norm_vcf_gz} {circ_300_norm_vcf_gz}
+        '''
 
 
