@@ -78,7 +78,7 @@ rule circ_rCRS:
     shell:
         '''
         # Circularize the reference
-        samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" | perl -ane 'BEGIN {{ print ">{params.seq_header}\n" }}  chomp; print ; END {{ print "\n" }}' > {output.circ_rCRS}
+        samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" | perl -ane 'BEGIN {{ print ">{params.seq_header}\n" }}  chomp; print ; END {{ print "\n" }}' > {output.circ_rCRS} && \
         
         # Index the circularized reference (this generates the .ann, .amb, .pac, .sa, and .bwt files)
         bwa index {output.circ_rCRS}        
