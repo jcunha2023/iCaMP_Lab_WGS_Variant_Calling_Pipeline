@@ -20,15 +20,15 @@ FILE_EXT = config["read_format"]
 #Initialize INPUT_ID based on config
 if config["SAMPLE_ID"]:  #Use single sample if SAMPLE_ID is provided and non-empty
     INPUT_ID = [config["SAMPLE_ID"]]
-# else:
-#     #Parse `units` file to load all sample IDs if SAMPLE_ID is not specified
-#     units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
-#     INPUT_ID = units.index.get_level_values('sample').unique().tolist()
+else:
+    #Parse `units` file to load all sample IDs if SAMPLE_ID is not specified
+    units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
+    INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
 
 rule all:
     input:
-        expand(OUTPUT_DIR + "/vcf_files_consensus/{SAMPLE_ID}_variants_called_against_consensus_splitted.vcf", SAMPLE_ID = INPUT_ID)
+        expand(WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_merged.vcf.gz", SAMPLE_ID = INPUT_ID)
         #expand(OUTPUT_DIR + "/fq_files/{SAMPLE_ID}.fq", SAMPLE_ID = INPUT_ID),
         #expand(OUTPUT_DIR + "/sam_files_rCRS/{SAMPLE_ID}.sam", SAMPLE_ID = INPUT_ID)
 
