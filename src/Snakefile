@@ -64,12 +64,7 @@ rule circ_rCRS:
         lin_rCRS= REF_DIR + "/chrMref.fa",
         lin_rCRS_idx= REF_DIR + "/chrMref.fa.fai"
     output:
-        circ_rCRS= REF_DIR + "/chrMref300.fa",
-        circ_rCRS_ann= REF_DIR + "/chrMref300.fa.ann",
-        circ_rCRS_amb= REF_DIR + "/chrMref300.fa.amb",
-        circ_rCRS_pac= REF_DIR + "/chrMref300.fa.pac",
-        circ_rCRS_sa= REF_DIR + "/chrMref300.fa.sa",
-        circ_rCRS_bwt= REF_DIR + "/chrMref300.fa.bwt"
+        circ_rCRS= REF_DIR + "/chrMref300.fa"
     params:
         seq_header="chrM", #header in the fasta file
         ext_len=300, #length of sequence extension
@@ -77,11 +72,22 @@ rule circ_rCRS:
     conda: f"{CONFIG_DIR}/samtools_ENV.yml"
     shell:
         '''
-        # Circularize the reference
-        samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" | perl -ane 'BEGIN {{ print ">{params.seq_header}\n" }}  chomp; print ; END {{ print "\n" }}' > {output.circ_rCRS} && \
-        
-        # Index the circularized reference (this generates the .ann, .amb, .pac, .sa, and .bwt files)
-        bwa index {output.circ_rCRS}        
+        samtools faidx {input.lin_rCRS} {params.seq_header}:1-{params.ext_len} | cat {params.fa_file_prefix}.fa - | grep -v ">" | perl -ane 'BEGIN {{ print ">{params.seq_header}\n" }}  chomp; print ; END {{ print "\n" }}' > {output.circ_rCRS} 
+        '''
+
+rule index_circ_rCRS:
+    input:
+        circ_rCRS= REF_DIR + "/chrMref300.fa"
+    output:
+        circ_rCRS_ann= REF_DIR + "/chrMref300.fa.ann",
+        circ_rCRS_amb= REF_DIR + "/chrMref300.fa.amb",
+        circ_rCRS_pac= REF_DIR + "/chrMref300.fa.pac",
+        circ_rCRS_sa= REF_DIR + "/chrMref300.fa.sa",
+        circ_rCRS_bwt= REF_DIR + "/chrMref300.fa.bwt"
+    conda: f"{CONFIG_DIR}/samtools_gatk_bwa_ENV.yml"
+    shell:
+        '''
+        bwa index {input.circ_rCRS}        
         '''
 
 # Make a fasta dictionary file for the circularized rCRS sequence
