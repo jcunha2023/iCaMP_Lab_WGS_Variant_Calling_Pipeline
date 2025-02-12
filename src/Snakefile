@@ -206,7 +206,7 @@ rule adjust_circ_sam_pos_300:
         offset = 300
     shell:
         '''
-        cat {input.sam} | \ 
+        cat {input.sam} | \
         circSam.pl -ref_len {input.ref_id} -offset {params.offset} > {output.sam_adjust_300}
         '''
 
