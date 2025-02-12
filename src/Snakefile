@@ -51,7 +51,7 @@ rule bam_2_fq:
     shell:
         '''
         if [ {params.FILE_EXT} == "bam" ]; then
-            samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
+            samtools sort -n {input.read_file} | samtools bam2fq > {output.fq}
         elif [ {params.FILE_EXT} == "cram" ]; then
             samtools view -b -T {input.ref_seq} -o {output.temp_bam} {input.read_file} && \
             samtools sort -n {output.temp_bam} | samtools bam2fq > {output.fq}
