@@ -312,7 +312,7 @@ rule tabix_1:
         '''         
         tabix -p vcf {input.lin_vcf_gz} && \
         tabix -p vcf {input.circ_0_vcf_gz} && \
-        tabix -p vcf {input.circ_300_vcf_gz} && \
+        tabix -p vcf {input.circ_300_vcf_gz} 
         '''
 
 # split multiallelic variants
@@ -424,7 +424,8 @@ rule tabix_2:
     shell:
         '''         
         tabix -p vcf {input.lin_vcf_filtered_vaf_50_gz} && \
-        tabix -p vcf {input.circ_vcf_filtered_vaf_50_gz} 
+        tabix -p vcf {input.circ_0_vcf_filtered_vaf_sort_50} && \
+        tabix -p vcf {input.circ_300_vcf_filtered_vaf_sort_50}
         '''
 
 # Left align the filtered variant calls, index them
