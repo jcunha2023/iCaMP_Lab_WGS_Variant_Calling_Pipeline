@@ -26,6 +26,9 @@ else:
     units = pd.read_table(config["units"], dtype=str).set_index(["sample"], drop=False)
     INPUT_ID = units.index.get_level_values('sample').unique().tolist()
 
+#Set global wildcard constraint to set SAMPLE_ID to be only what is present in INPUT_ID 
+wildcard_constraints:
+    SAMPLE_ID="|".join(INPUT_ID)
 
 rule all:
     input:
