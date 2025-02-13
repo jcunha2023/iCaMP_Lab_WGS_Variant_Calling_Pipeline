@@ -249,7 +249,7 @@ rule variant_calling_1a:
     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
-        bash scripts/variant_calling_1.sh {input.sam} {params.reference} {params.interval} {params.working_dir}
+        bash variant_calling_1.sh {input.sam} {params.reference} {params.interval} {params.working_dir}
         '''
 
 # run variant calling script which used gatk mutect2 in mitochondrial mode
@@ -272,7 +272,7 @@ rule variant_calling_1b:
     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
-        bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
+        bash variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
         '''
 # run variant calling script which used gatk mutect2 in mitochondrial mode
 # This step uses the circular version of the rCRS to call variants in a select region of the DLOOP with a polycytosine tract (chrM:285-315)
@@ -293,7 +293,7 @@ rule variant_calling_1c:
     conda: f"{CONFIG_DIR}/samtools_gatk_ENV.yml"
     shell:
         '''
-        bash scripts/variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
+        bash variant_calling_1.sh {input.circ_sam} {params.reference} {params.interval} {params.working_dir}
         '''
 
 # Sort and compress VCF file 
@@ -391,7 +391,7 @@ rule filter_vcf_vaf_50_lin:
         SAMPLE_ID = lambda wildcards: wildcards.SAMPLE_ID
     shell:
         '''
-        python3 scripts/filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.lin_vcf_filtered_vaf_50}
+        python3 filter_VAF.py {input.lin_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.lin_vcf_filtered_vaf_50}
         '''
 # filter for only variants with VAF > 50 (circular_reference_sequence)
 rule filter_vcf_vaf_50_circ:
@@ -406,8 +406,8 @@ rule filter_vcf_vaf_50_circ:
         SAMPLE_ID = lambda wildcards: wildcards.SAMPLE_ID
     shell:
         '''
-        python3 scripts/filter_VAF.py {input.circ_0_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_0_vcf_filtered_vaf_50} && \
-        python3 scripts/filter_VAF.py {input.circ_300_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_300_vcf_filtered_vaf_50}
+        python3 filter_VAF.py {input.circ_0_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_0_vcf_filtered_vaf_50} && \
+        python3 filter_VAF.py {input.circ_300_vcf_splitted} {params.SAMPLE_ID} {params.SAMPLE_ID} {output.circ_300_vcf_filtered_vaf_50}
         '''
 
 # Sort and index VCF files 
