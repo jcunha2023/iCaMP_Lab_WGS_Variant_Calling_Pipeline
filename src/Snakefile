@@ -310,7 +310,7 @@ rule sort_vcf_1:
         circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
         circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
-    conda: "config/htslib_bcftools_ENV.yml"
+    conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
     shell:
         '''
         bcftools sort -Oz -o {output.circ_0_vcf_gz} {input.circ_0_vcf} && \
