@@ -420,7 +420,7 @@ rule sort_vcf_2:
         lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
         circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_filtered_sorted_circ.vcf",
         circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_filtered_sorted_circ.vcf"   
-    conda: "config/htslib_bcftools_ENV.yml"
+    conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
     shell:
         '''
         bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {input.lin_vcf_filtered_vaf_50} && \
