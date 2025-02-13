@@ -299,12 +299,12 @@ rule variant_calling_1c:
 rule sort_vcf_1:
     priority: 14
     input: 
-        circ_0_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf",
-        circ_300_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf",
+        circ_300_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf",
+        circ_0_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf",
         lin_vcf = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf"
     output:
-        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
-        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
+        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
+        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
     shell:
@@ -318,12 +318,12 @@ rule sort_vcf_1:
 rule tabix_1:
     priority:15
     input:
-        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
-        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
+        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
+        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz"
     output:
-        circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
-        circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"  
     params:
     threads: 1
@@ -339,16 +339,16 @@ rule tabix_1:
 rule split_multiallele_1:
     priority:16
     input:
-        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
-        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
+        circ_300_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz",
+        circ_0_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz",
         lin_vcf_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz",
-        circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
-        circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_300_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_circ_variants_called_against_rCRS.vcf.gz.tbi",
+        circ_0_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.gz.tbi",
         lin_vcf_gz_tbi = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS.vcf.gz.tbi"     
     output:
         lin_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_lin.vcf",
-        circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_circ.vcf",
-        circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_circ.vcf"
+        circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_circ.vcf",
+        circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_circ.vcf"
     params:
         lin_reference = REF_DIR + "/chrMref.fa",
         circ_reference = REF_DIR + "/chrMref300.fa"
@@ -396,11 +396,11 @@ rule filter_vcf_vaf_50_lin:
 rule filter_vcf_vaf_50_circ:
     priority: 18
     input:
-        circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_circ.vcf",
-        circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_circ.vcf"
+        circ_300_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_circ.vcf",
+        circ_0_vcf_splitted = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_circ.vcf"
     output:
-        circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_filtered_circ.vcf",
-        circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_filtered_circ.vcf"
+        circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_filtered_circ.vcf",
+        circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_filtered_circ.vcf"
     params:
         SAMPLE_ID = lambda wildcards: wildcards.SAMPLE_ID
     shell:
@@ -414,18 +414,18 @@ rule sort_vcf_2:
     priority:19
     input: 
         lin_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_lin.vcf",
-        circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_filtered_circ.vcf",
-        circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_filtered_circ.vcf"
+        circ_300_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_filtered_circ.vcf",
+        circ_0_vcf_filtered_vaf_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_filtered_circ.vcf"
     output:
         lin_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_variants_called_against_rCRS_splitted_filtered_sorted_lin.vcf.gz",
-        circ_0_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_filtered_sorted_circ.vcf",
-        circ_300_vcf_filtered_vaf_sort_50 = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_filtered_sorted_circ.vcf"   
+        circ_300_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_300_splitted_filtered_sorted_circ.vcf.gz",
+        circ_0_vcf_filtered_vaf_50_sort_gz = WORKING_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_splitted_filtered_sorted_circ.vcf.gz"   
     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
     shell:
         '''
-        bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_gz} {input.lin_vcf_filtered_vaf_50} && \
-        bcftools sort -Oz -o {output.circ_0_vcf_filtered_vaf_50} {input.circ_0_vcf_filtered_vaf_50} && \
-        bcftools sort -Oz -o {output.circ_300_vcf_filtered_vaf_50} {input.circ_300_vcf_filtered_vaf_50}
+        bcftools sort -Oz -o {output.lin_vcf_filtered_vaf_50_sort_gz} {input.lin_vcf_filtered_vaf_50} && \
+        bcftools sort -Oz -o {output.circ_0_vcf_filtered_vaf_50_sort_gz} {input.circ_0_vcf_filtered_vaf_50} && \
+        bcftools sort -Oz -o {output.circ_300_vcf_filtered_vaf_50_sort_gz} {input.circ_300_vcf_filtered_vaf_50}
         '''
 # index the filtered vaf > 50 vcf.gz files
 rule tabix_2:
