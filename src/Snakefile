@@ -493,7 +493,7 @@ rule merge_vcf_1:
     conda: f"{CONFIG_DIR}/htslib_bcftools_ENV.yml"
     shell:
         '''
-        bcftools merge --force-samples -Oz -o {output.merged_vcf} {input.lin_norm_vcf_gz} {input.circ_0_norm_vcf_gz} {circ_300_norm_vcf_gz}
+        bcftools merge --force-samples {input.lin_norm_vcf_gz} {input.circ_0_norm_vcf_gz} {circ_300_norm_vcf_gz} -Oz -o {output.merged_vcf}
         '''
 
 
