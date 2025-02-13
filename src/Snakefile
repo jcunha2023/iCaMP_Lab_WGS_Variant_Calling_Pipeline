@@ -207,6 +207,7 @@ rule adjust_circ_sam_pos_0:
         offset = 0
     shell:
         '''
+        chmod +777 circSam.pl && \
         cat {input.sam} | \
         perl circSam.pl -ref_len {input.ref_idx} -offset {params.offset} > {output.sam_adjust_0}
         '''
