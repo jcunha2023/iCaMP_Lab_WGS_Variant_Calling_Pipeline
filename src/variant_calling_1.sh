@@ -9,6 +9,9 @@ WORKDIR=$4
 temp_dir=${WORKDIR}/tmp/
 vcf_dir=${WORKDIR}/vcf_files_rCRS/
 
+# Make the temp directory
+mkdir -p "$temp_dir"
+
 # get sample id
 SAMPLE_ID_TEMP="${INPUT_SAM##*/}"
 SAMPLE_ID="${SAMPLE_ID_TEMP%%_*}"
