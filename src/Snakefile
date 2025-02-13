@@ -264,9 +264,9 @@ rule variant_calling_1b:
         circ_sam = OUTPUT_DIR + "/sam_files_rCRS/circular/{SAMPLE_ID}_circ_adjusted_0.sam",
         circ_rCRS_dict= REF_DIR + "/chrMref300.dict"
     output:
-        circ_vcf = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_variants_called_against_rCRS.vcf",
-        circ_idx= OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.idx",
-        circ_stats= OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_circ_adjusted_0_circ_variants_called_against_rCRS.vcf.stats"
+        circ_vcf = OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf",
+        circ_idx= OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.idx",
+        circ_stats= OUTPUT_DIR + "/vcf_files_rCRS/{SAMPLE_ID}_adjusted_0_circ_variants_called_against_rCRS.vcf.stats"
     params:
         interval = "chrM:285-315",
         reference = REF_DIR + "/chrMref300.fa",
